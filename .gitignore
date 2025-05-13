@@ -46,7 +46,6 @@ docs/
 # Archivos de datos pesados
 # ===============================
 *.rds
-*.csv
 
 # ===============================
 # Archivos de imagen y salida
