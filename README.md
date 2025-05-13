@@ -51,6 +51,10 @@ git clone https://github.com/Fernando-Alvarado/PhishML.git
 
 ## 📁 Organizacion del proyecto 
 
+
+
+## ⚙️ Requisitos
+
 ```text
 
 PHISHML/
@@ -77,13 +81,40 @@ PHISHML/
 
 ```
 
-## ⚙️ Requisitos
 
-- Tener instalado R (versión ≥ 4.3.2)
-- Tener RStudio (opcional pero recomendado)
-- Instalar los siguientes paquetes de R:
-  - `tidyverse`
-  - `readr`
-  - `dplyr`
-  - `ggplot2`
-  - `naniar`
+## ✅ Organización del trabajo con GitHub Projects
+
+Para llevar un control claro de nuestras tareas, usamos un **tablero tipo Kanban** en GitHub Projects. Este está dividido en columnas que indican el estado de cada actividad.
+
+### 🟢 Backlog
+- Tareas identificadas que **aún no se han empezado**.
+- Puede haber ideas, tareas pendientes sin responsable o cosas a largo plazo.
+
+### 🔵 Ready
+- Tareas **listas para empezar a trabajar**.
+- Ya están definidas y se pueden tomar directamente desde aquí.
+
+### 🟡 In progress
+- Tareas que **ya están en proceso** por alguien del equipo.
+- Solo deberías tener 1 o 2 tareas en esta columna a la vez.
+
+### 🟣 In review
+- Tareas que **ya terminaron**, pero que necesitan ser **revisadas** antes de marcarse como completas.
+
+### 🟠 Done
+- Tareas **completadas y revisadas**.
+- No necesitan más atención.
+
+---
+
+### 📌 ¿Cómo usar el tablero?
+
+1. Crea una tarjeta con tu tarea usando `+ Add item`.
+2. Mueve la tarjeta entre columnas según tu avance.
+3. Asigna responsable y etiquetas desde el *Issue* vinculado.
+4. En cada reunión o revisión, usamos este tablero para ver avances y bloqueos.
+
+---
+
+🔗 **Accede al tablero aquí:**  
+[Ir al tablero de tareas](https://github.com/users/Fernando-Alvarado/projects/1/views/1)
