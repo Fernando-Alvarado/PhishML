@@ -52,16 +52,6 @@ git clone https://github.com/Fernando-Alvarado/PhishML.git
 ## 📁 Organizacion del proyecto 
 
 ```text
-proyecto/
-├──  📂 Data/                              # Datos utilizados en el análisis
-├──  📂   proyecto_final_files/     # Imágenes generadas por el Rmd
-│        └── figure-html/
-├──  📂   Image                          #Imagenes para el readme
-├── .gitignore                              # Archivos ignorados por Git
-├──  🅡 proyecto_final.Rmd               # Código fuente en R Markdown
-└── README.md                          # Documentación del proyecto
-
-
 
 PHISHML/
 ├── 📂Data/                   # Datos originales y procesados
