@@ -1,0 +1,195 @@
+## 1. Estructura de URLs y dominios
+
+### Variables relacionadas
+- `URLLength`: Longitud total de la URL.
+- `DomainLength`: Longitud del dominio principal.
+- `TLD`: Dominio de nivel superior (como `.com`, `.org`, `.xyz`).
+- `TLDLength`: Longitud del TLD.
+- `URL`: Dirección completa usada para el acceso.
+- `NoOfSubDomain`: Número de subdominios presentes en la URL.
+
+### ¿Qué es un dominio, subdominio y TLD?
+
+- **Dominio**: Nombre principal de un sitio web. Ejemplo: `google.com`.
+- **Subdominio**: Prefijo que antecede al dominio para diferenciar secciones o servicios. Ejemplo: `mail.google.com`.
+- **TLD (Top Level Domain)**: Es la parte final de una URL (como `.com`, `.org`, `.xyz`). Es administrado por entidades autorizadas (como ICANN).
+
+### ¿Qué es un TLD legítimo vs sospechoso?
+
+- **Legítimos**: `.com`, `.edu`, `.org`, `.gov` — comúnmente asociados a entidades confiables y registradas.
+- **Sospechosos o de alto riesgo**: `.xyz`, `.tk`, `.ml`, `.ga` — suelen ser usados en campañas de phishing debido a su bajo costo o políticas laxas de registro.
+
+### Técnicas comunes de phishing usando subdominios
+
+Los atacantes suelen ocultar el dominio real dentro de múltiples subdominios para engañar visualmente al usuario.
+
+ **Ejemplo:** login.bank.com.phish.site
+
+
+- El **dominio real** aquí es `phish.site`.
+- Todo lo anterior (`login.bank.com`) son subdominios diseñados para parecer legítimos.
+
+Esto puede engañar a usuarios que creen que están entrando a `bank.com`, cuando en realidad están en otro dominio malicioso.
+
+---
+
+## 2. Ofuscación y manipulación
+
+### Variables relacionadas
+- `HasObfuscation`: Indica si la URL contiene algún tipo de ofuscación.
+- `NoOfObfuscatedChar`: Número de caracteres ofuscados en la URL.
+- `ObfuscationRatio`: Proporción de caracteres ofuscados respecto al total de la URL.
+
+### Técnicas comunes para ofuscar URLs
+Los atacantes utilizan distintas estrategias para disfrazar el verdadero propósito de una URL, dificultando su detección por parte del usuario o los sistemas automáticos. Estas técnicas incluyen:
+
+- Uso de **caracteres especiales** como `%20`, `%2F` o `%3A` para codificar partes de la URL y hacerlas menos legibles.
+- Inserción de **códigos Unicode** o **caracteres en formato hexadecimal** que visualmente parecen normales pero representan otra cosa a nivel técnico.
+- Agregación de múltiples parámetros, subdominios o rutas que diluyen visualmente la parte sospechosa.
+
+### Codificación Unicode y ataques con homógrafos
+- Los **homógrafos** son caracteres visualmente similares pero técnicamente distintos (como la "а" cirílica vs la "a" latina). Un dominio como `gооgle.com` (con dos letras "o" en cirílico) puede parecer legítimo, pero redirigir a un sitio malicioso.
+- Este tipo de ataque aprovecha las **similitudes tipográficas** para engañar al ojo humano, especialmente en URLs que aparentan ser de instituciones conocidas.
+
+### Riesgos
+Las URLs ofuscadas evaden filtros automáticos y engañan fácilmente a usuarios inexpertos. Analizar estas características permite detectar patrones que indican actividad sospechosa.
+
+---
+
+## 3. Análisis de caracteres en URLs
+
+### Variables relacionadas
+- `CharContinuationRate`: Frecuencia de secuencias repetidas de caracteres.
+- `URLCharProb`: Probabilidad promedio de aparición de caracteres en la URL.
+- `NoOfLettersInURL`: Número total de letras presentes en la URL.
+- `LetterRatioInURL`: Proporción de letras respecto al total de caracteres.
+- `NoOfDegitsInURL`: Cantidad de dígitos numéricos presentes en la URL.
+- `DegitRatioInURL`: Proporción de dígitos respecto al total.
+- `SpacialCharRatioInURL`: Proporción de caracteres especiales como `!`, `=`, `&`, `?`.
+- `NoOfEqualsInURL`: Número de signos de igual `=`.
+- `NoOfMarkInURL`: Número de signos de interrogación `?`.
+- `NoOfAmpersandInURL`: Número de símbolos `&`.
+- `NoOfOtherSpecialCharsInURL`: Cantidad de otros símbolos especiales.
+
+### Distribución natural de caracteres
+En URLs legítimas, la distribución de letras, números y símbolos especiales suele seguir patrones consistentes, ya que reflejan nombres de marcas, rutas lógicas o categorías.
+
+### Phishing y uso de símbolos especiales
+Los sitios de phishing tienden a contener más caracteres especiales, como `=`, `&` y `?`, porque muchas veces simulan formularios o enlaces con parámetros falsos. También buscan evadir filtros o parecer complejos para desviar la atención del usuario.
+
+### Continuidad y repetición como señal
+La repetición exagerada de caracteres o patrones artificiales como `aaa111!!!` suele ser una señal de URLs generadas automáticamente, las cuales son comunes en ataques de phishing masivo.
+
+---
+
+## 4. Seguridad y protocolo
+
+### Variable relacionada
+- `IsHTTPS`: Indica si la URL utiliza el protocolo HTTPS (cifrado SSL/TLS).
+
+### Confiabilidad del uso de HTTPS como indicador
+Aunque el uso de HTTPS implica que la conexión está cifrada, **no garantiza** que el sitio sea legítimo. Muchos sitios de phishing utilizan HTTPS para generar confianza en el usuario. El candado en el navegador solo indica una conexión segura, pero no la **autenticidad del sitio web**.
+
+### Certificados SSL y ataques MITM
+- **Certificados autofirmados**: Son creados por el propio sitio sin validación por una autoridad confiable. Aunque pueden activar HTTPS, carecen de verificación externa.
+- **Ataques Man-in-the-Middle (MITM)**: En algunos casos, el atacante puede interceptar la conexión aún bajo HTTPS, especialmente si se aceptan certificados no válidos o hay manipulación en la red local.
+
+Por tanto, confiar únicamente en HTTPS como medida de seguridad es insuficiente en el análisis de URLs sospechosas.
+
+
+## 5. Contenido del sitio web (HTML)
+
+### Variables relacionadas
+- `LineOfCode`: Número total de líneas de código HTML en el sitio.
+- `LargestLineLength`: Longitud de la línea más extensa, útil para detectar código ofuscado o incrustado.
+- `HasTitle`: Indica si el sitio tiene etiqueta `<title>`.
+- `Title`: Texto contenido en la etiqueta `<title>`.
+- `DomainTitleMatchScore`: Medida de coincidencia entre el dominio y el título del sitio.
+- `URLTitleMatchScore`: Coincidencia entre la URL y el título, importante para verificar coherencia temática.
+- `HasFavicon`: Indica si el sitio posee un ícono (favicon), común en páginas legítimas.
+- `Robots`: Presencia de archivo `robots.txt`, utilizado para el control del rastreo por motores de búsqueda.
+- `IsResponsive`: Indica si el sitio se adapta a distintos dispositivos, típico en páginas profesionales.
+
+### Metainformación típica de un sitio legítimo
+Los sitios auténticos suelen incluir etiquetas como `<title>`, íconos favicon, metadatos de autoría, descripciones y archivos como `robots.txt`. Estas señales reflejan un diseño cuidado y orientado al SEO o al servicio real.
+
+### Longitud del HTML y estructura
+Páginas reales tienden a tener un código HTML más extenso y estructurado. En contraste, sitios de phishing frecuentemente presentan HTML reducido, con plantillas incompletas o generado automáticamente, ya que su objetivo es engañar rápidamente.
+
+### Sitios vacíos o rotos
+La ausencia de contenido útil, errores de carga, o la presencia de formularios falsos con muy poco HTML, son señales de alerta. Estos sitios son construidos con el único fin de recolectar datos sin brindar ninguna funcionalidad legítima.
+
+--- 
+
+## 6. Estructura de formularios
+
+### Variables relacionadas
+- `HasExternalFormSubmit`: Indica si el formulario envía datos a un dominio externo al sitio principal.
+- `HasSubmitButton`: Señala la presencia de un botón de envío (`submit`).
+- `HasHiddenFields`: Detecta campos ocultos en el formulario.
+- `HasPasswordField`: Indica si el formulario incluye campos de contraseña.
+
+### Recolección de credenciales en phishing
+Los sitios fraudulentos suelen emplear formularios HTML que simulan páginas de inicio de sesión legítimas. Estos formularios pueden estar diseñados con HTML o manipulados dinámicamente usando JavaScript para capturar datos al momento del envío.
+
+### Indicadores sospechosos
+- **Acción hacia otro dominio**: Formularios que envían datos a servidores externos son una alerta crítica, especialmente si el dominio no coincide con el sitio aparente.
+- **Campos ocultos**: Se utilizan para insertar datos adicionales, rastrear usuarios o ejecutar scripts maliciosos.
+- **Ausencia de botones de envío visibles**: Algunos sitios usan JavaScript para capturar datos sin necesidad de una acción explícita del usuario.
+
+La combinación de estos elementos puede indicar que un formulario fue diseñado con fines maliciosos en lugar de brindar una funcionalidad real.
+
+---
+
+## 7. Temática del sitio
+
+### Variables relacionadas
+- `Bank`: Indica si el sitio contiene palabras clave o elementos relacionados con servicios bancarios.
+- `Pay`: Detecta menciones o elementos vinculados a sistemas de pago.
+- `Crypto`: Señala la presencia de contenido relacionado con criptomonedas.
+- `HasSocialNet`: Verifica si el sitio incluye vínculos o referencias a redes sociales.
+- `HasCopyrightInfo`: Indica la existencia de textos legales como copyright o términos de uso.
+
+### Enfoque en bancos, pagos y criptomonedas
+Los sitios de phishing tienden a replicar temáticas asociadas a transacciones financieras porque:
+- Son contextos donde los usuarios ya esperan introducir información sensible (como contraseñas o datos de tarjetas).
+- El potencial beneficio para el atacante es alto, especialmente en plataformas de banca en línea o billeteras de criptomonedas.
+
+### Ingeniería social mediante contenido falso
+Los atacantes manipulan el diseño, logotipos y textos legales para generar confianza en la víctima. Al incluir elementos como avisos de seguridad, íconos sociales o supuestos enlaces a términos y condiciones, imitan la estética de sitios legítimos para facilitar la recolección de credenciales.
+
+
+---
+
+## 8. Comportamiento de enlaces
+
+### Variables relacionadas
+- `NoOfURLRedirect`: Número total de redirecciones detectadas en las URLs del sitio.
+- `NoOfSelfRedirect`: Cantidad de redirecciones que apuntan al mismo dominio.
+- `NoOfSelfRef`: Número de referencias internas dentro del mismo sitio.
+- `NoOfEmptyRef`: Enlaces que no apuntan a ninguna parte (`href="#"`, `href=""`).
+- `NoOfExternalRef`: Número de referencias a dominios externos.
+
+### Redirecciones y enlaces trampa
+Los sitios de phishing frecuentemente implementan **redirecciones automáticas** que llevan al usuario desde una URL aparentemente inocua a otra maliciosa. Estas pueden estar diseñadas para evadir filtros o aprovechar vulnerabilidades de confianza en navegadores o aplicaciones.
+
+También se utilizan **enlaces trampa**, que aparentan ser funcionales pero no conducen a ningún recurso real. Estos enlaces vacíos o internos simulan una interacción legítima, generando una falsa sensación de seguridad mientras se recolectan datos o se ejecutan scripts maliciosos en segundo plano.
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
