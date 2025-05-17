@@ -16,6 +16,10 @@ library(dplyr)
  library(igraph) 
 library(gridExtra)  #Guarddar datos 
 
+library(naniar)
+library(visdat)
+library(skimr)
+
 
 ```
 
@@ -94,6 +98,23 @@ data <- read.csv("PhiUSIIL_Phishing_URL_Dataset.csv", header = TRUE, sep = ",")
 | `Label` | Variable objetivo: 1 = phishing, 0 = legítimo. |
 
 
+
+
+### Hagamos un analisis rapido para ver los NAs
+
+```{r}
+
+for (colname in names(data)) {
+  temp_df <- data[colname]  # Esto crea un data.frame de una sola columna
+  print(vis_miss(temp_df))
+}
+
+
+```
+
+```{r}
+skim(data)
+```
 
 
 
