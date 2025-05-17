@@ -1,0 +1,38 @@
+# Top Features Contributing to Principal Components
+
+## Principal Component 1
+URLSimilarityIndex: 0.2860
+HasSocialNet: 0.2414
+DomainTitleMatchScore: 0.2305
+HasCopyrightInfo: 0.2243
+URLTitleMatchScore: 0.2212
+HasDescription: 0.2164
+NoOfOtherSpecialCharsInURL: -0.2104
+SpacialCharRatioInURL: -0.2100
+CharContinuationRate: 0.2072
+HasSubmitButton: 0.1883
+
+## Principal Component 2
+NoOfEqualsInURL: 0.3502
+NoOfDegitsInURL: 0.3440
+URLLength: 0.3251
+NoOfAmpersandInURL: 0.3088
+NoOfObfuscatedChar: 0.3035
+NoOfOtherSpecialCharsInURL: 0.2938
+NoOfLettersInURL: 0.2597
+NoOfQMarkInURL: 0.1682
+IsHTTPS: 0.1523
+HasSubmitButton: 0.1463
+
+## Principal Component 3
+NoOfSubDomain: 0.3256
+CharContinuationRate: -0.3071
+URLTitleMatchScore: -0.2742
+DomainTitleMatchScore: -0.2579
+TLDLegitimateProb: -0.2567
+SpacialCharRatioInURL: 0.2474
+DomainLength: 0.1993
+TLDLength: -0.1964
+NoOfObfuscatedChar: -0.1847
+IsHTTPS: 0.1680
+

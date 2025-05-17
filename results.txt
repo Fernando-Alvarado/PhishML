@@ -1,0 +1,44 @@
+# AutoGluon Model Training Results
+
+## Training Time
+Total training time: 1201.99 seconds
+
+## Test Performance
+roc_auc: 1.0
+accuracy: 1.0
+balanced_accuracy: 1.0
+mcc: 1.0
+f1: 1.0
+precision: 1.0
+recall: 1.0
+
+## Model Leaderboard
+                        model  score_test  score_val eval_metric  pred_time_test  pred_time_val    fit_time  pred_time_test_marginal  pred_time_val_marginal  fit_time_marginal  stack_level  can_infer  fit_order
+0        CatBoost_r177_BAG_L1    1.000000   1.000000     roc_auc        0.065779       0.083965   44.288510                 0.065779                0.083965          44.288510            1       True         14
+1     RandomForestEntr_BAG_L1    1.000000   1.000000     roc_auc        0.121930       3.217840    4.200515                 0.121930                3.217840           4.200515            1       True          6
+2     RandomForestGini_BAG_L1    1.000000   1.000000     roc_auc        0.122895       3.121975    4.723050                 0.122895                3.121975           4.723050            1       True          5
+3             CatBoost_BAG_L1    1.000000   1.000000     roc_auc        0.144336       0.085907  118.230180                 0.144336                0.085907         118.230180            1       True          7
+4       ExtraTreesEntr_BAG_L1    1.000000   1.000000     roc_auc        0.145480       3.363785    2.759899                 0.145480                3.363785           2.759899            1       True          9
+5       ExtraTreesGini_BAG_L1    1.000000   1.000000     roc_auc        0.154466       3.372654    2.976173                 0.154466                3.372654           2.976173            1       True          8
+6             LightGBM_BAG_L1    1.000000   1.000000     roc_auc        0.779614       2.719349    6.350413                 0.779614                2.719349           6.350413            1       True          4
+7              XGBoost_BAG_L1    1.000000   1.000000     roc_auc        0.790125       0.469749   17.768608                 0.790125                0.469749          17.768608            1       True         11
+8         WeightedEnsemble_L2    1.000000   1.000000     roc_auc        0.791455       0.485007   24.331535                 0.001330                0.015258           6.562927            2       True         16
+9       NeuralNetTorch_BAG_L1    1.000000   1.000000     roc_auc        2.090708       1.194167   85.425305                 2.090708                1.194167          85.425305            1       True         12
+10  NeuralNetTorch_r79_BAG_L1    1.000000   1.000000     roc_auc        2.207775       1.270327    7.639647                 2.207775                1.270327           7.639647            1       True         15
+11       LightGBMLarge_BAG_L1    1.000000   1.000000     roc_auc        2.289847      10.048487   12.619837                 2.289847               10.048487          12.619837            1       True         13
+12          LightGBMXT_BAG_L1    1.000000   1.000000     roc_auc        2.878961       9.663455   64.906519                 2.878961                9.663455          64.906519            1       True          3
+13            CatBoost_BAG_L2    1.000000   1.000000     roc_auc       21.407316      61.517612  622.325935                 0.087055                0.083010          88.067731            2       True         21
+14      ExtraTreesGini_BAG_L2    1.000000   1.000000     roc_auc       21.429652      65.213605  535.836073                 0.109391                3.779003           1.577869            2       True         22
+15    RandomForestEntr_BAG_L2    1.000000   1.000000     roc_auc       21.434944      65.286961  536.399781                 0.114683                3.852359           2.141577            2       True         20
+16    RandomForestGini_BAG_L2    1.000000   1.000000     roc_auc       21.435038      65.325788  536.594991                 0.114777                3.891186           2.336787            2       True         19
+17      ExtraTreesEntr_BAG_L2    1.000000   1.000000     roc_auc       21.447563      65.352588  535.874557                 0.127302                3.917987           1.616353            2       True         23
+18        WeightedEnsemble_L3    1.000000   1.000000     roc_auc       21.449106      65.360150  543.501273                 0.001543                0.007562           7.626716            3       True         27
+19          LightGBMXT_BAG_L2    1.000000   1.000000     roc_auc       21.947129      63.838306  541.541094                 0.626867                2.403704           7.282890            2       True         17
+20             XGBoost_BAG_L2    1.000000   1.000000     roc_auc       22.255017      61.855052  548.469661                 0.934756                0.420451          14.211457            2       True         25
+21      NeuralNetTorch_BAG_L2    1.000000   1.000000     roc_auc       23.367477      63.014855  569.775228                 2.047216                1.580253          35.517024            2       True         26
+22     NeuralNetFastAI_BAG_L2    1.000000   1.000000     roc_auc       24.984438      62.588491  629.660446                 3.664177                1.153890          95.402242            2       True         24
+23            LightGBM_BAG_L2    1.000000   1.000000     roc_auc       22.192421      64.578608  541.006935                 0.872160                3.144006           6.748731            2       True         18
+24     NeuralNetFastAI_BAG_L1    1.000000   1.000000     roc_auc        3.992911       1.010698  162.105635                 3.992911                1.010698         162.105635            1       True         10
+25      KNeighborsDist_BAG_L1    0.999070   0.999186     roc_auc        2.798202      10.862562    0.140718                 2.798202               10.862562           0.140718            1       True          2
+26      KNeighborsUnif_BAG_L1    0.999065   0.999183     roc_auc        2.737232      10.949682    0.123195                 2.737232               10.949682           0.123195            1       True          1
+
