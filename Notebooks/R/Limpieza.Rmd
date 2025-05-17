@@ -1,0 +1,154 @@
+---
+title: "Limpieza - Dataset de Phishing"
+output: html_document
+---
+
+
+Archivo donde se seleccionaron las variables más importantes de nuestros datos. Esto se realizó gracias al archivo `exploracion.Rmd`, en el cual se llevó a cabo un análisis descriptivo y se consideraron variables categóricas, con varianza significativa y sin sesgo, para poder incluirlas en nuestro modelo de aprendizaje automático (ML).
+
+
+```{r Data}
+
+
+setwd("C:/Users/ferna/Documents/PhishML/Data/Raw")
+data <- read.csv("PhiUSIIL_Phishing_URL_Dataset.csv", header = TRUE, sep = ",")
+
+```
+
+
+```{r, Filtro }
+
+
+datalimpia <- data %>%  dplyr::select(-FILENAME, -URL, -Domain,- Title, -NoOfObfuscatedChar, -HasObfuscation, -NoOfAmpersandInURL, -URLLength,   -URLSimilarityIndex, CharContinuationRate,  
+                                      -ObfuscationRatio, -NoOfLettersInURL, -NoOfDegitsInURL, -DegitRatioInURL, -NoOfEqualsInURL, -NoOfQMarkInURL, -NoOfAmpersandInURL, -NoOfOtherSpecialCharsInURL, 
+                                      -SpacialCharRatioInURL, -LineOfCode, -LargestLineLength, -NoOfPopup, -NoOfiFrame, -NoOfImage, -NoOfCSS, -NoOfJS, -NoOfSelfRef, -NoOfEmptyRef, -NoOfExternalRef ) %>%
+                        dplyr::mutate(
+                          IsDomainIP = as.factor(IsDomainIP),
+                          IsHTTPS = as.factor(IsHTTPS),
+                          HasTitle = as.factor(HasTitle),
+                          HasFavicon = as.factor(HasFavicon),
+                          Robots = as.factor(Robots),
+                          IsResponsive = as.factor(IsResponsive),
+                          NoOfURLRedirect = as.factor(NoOfURLRedirect),
+                          NoOfSelfRedirect = as.factor(NoOfSelfRedirect),
+                          HasDescription = as.factor(HasDescription),
+                          HasExternalFormSubmit = as.factor(HasExternalFormSubmit),
+                          HasSocialNet = as.factor(HasSocialNet),                      # ?
+                          HasSubmitButton = as.factor(HasSubmitButton),
+                          HasHiddenFields = as.factor(HasHiddenFields),                # ?
+                          HasPasswordField = as.factor(HasPasswordField),
+                          Bank = as.factor(Bank),
+                          Pay = as.factor(Pay),
+                          Crypto = as.factor(Crypto),
+                          HasCopyrightInfo = as.factor(HasCopyrightInfo),              # ?
+                          #Variable a predecir
+                          label = as.factor(label), 
+                          # Transformado a variables categoricas con limitacion de de categorias
+                          TLDLength = case_when(
+                                TLDLength == 2 ~ "2",
+                                TLDLength == 3 ~ "3",
+                                TLDLength > 3  ~ ">3"
+                          ), 
+                          TLDLength = as.factor(TLDLength),
+                          NoOfSubDomain = case_when(
+                                NoOfSubDomain == 0 ~ "0",
+                                NoOfSubDomain == 1 ~ "1",
+                                NoOfSubDomain > 1  ~ ">=2"
+                          ), 
+                          NoOfSubDomain = as.factor(NoOfSubDomain),
+                          #Puedes modficar la seguridad que cumpla la condicion o no 
+                          DomainTitleMatchScore = case_when(
+                                DomainTitleMatchScore >= 95 ~ "1",
+                                DomainTitleMatchScore < 95 ~  "0",
+                          ), 
+                          DomainTitleMatchScore = as.factor(DomainTitleMatchScore),
+                          URLTitleMatchScore = case_when(
+                                URLTitleMatchScore >= 95 ~ "1",
+                                URLTitleMatchScore < 95 ~  "0",
+                          ), 
+                          URLTitleMatchScore = as.factor(URLTitleMatchScore)
+                        )
+
+```
+
+```{r}
+datalimpia
+```
+
+
+
+```{r, GuardarRds }
+saveRDS(datalimpia, file = "C:/Users/ferna/Documents/PhishML/Data/Procesada/datalimpia.rds")
+```
+
+
+```{r, GuardarCsv}
+write.csv(datalimpia, "C:/Users/ferna/Documents/PhishML/Data/Procesada/datalimpia.csv", row.names = FALSE)
+
+```
+
+
+---
+
+## Variables y su proceso de descarte o integración
+
+En esta sección se describe el proceso mediante el cual se evaluaron las variables del conjunto de datos para decidir su descarte o integración al modelo. Se analizaron criterios como la varianza, la presencia de sesgo, la correlación con la variable objetivo y la importancia en el análisis exploratorio previo.
+
+
+
+
+FILENAME                      - Eliminada
+URL                           - Eliminada                  
+URLLength                     - Eliminada Muy poca varianza 
+Domain                        - Eliminada                                      
+IsDomainIP                    - Transf F
+TLD                           - Sin transformacion 
+URLSimilarityIndex            - Eliminada Muy poca varianza       
+CharContinuationRate          - Eliminada Muy poca varianza   
+TLDLegitimateProb             - Sin transformacion, parece tener una distribucion       **(No se si quitar)**   
+URLCharProb                   - Sin transformacion, parece tener una distribucion                          
+TLDLength                     - Modificado para tener 3 categorias   
+NoOfSubDomain                 - Modificado para tener 3 categorias   
+HasObfuscation                - Eliminada Muy poca varianza    
+NoOfObfuscatedChar            - Eliminada Muy poca varianza       
+ObfuscationRatio              - Eliminada Muy poca varianza       
+NoOfLettersInURL              - Eliminada Muy poca varianza            
+LetterRatioInURL              - Sin transformacion, parece tener una distribucion       
+NoOfDegitsInURL               - Eliminada Muy poca varianza         
+DegitRatioInURL               - Eliminada Muy poca varianza        
+NoOfEqualsInURL               - Eliminada Muy poca varianza        
+NoOfQMarkInURL                - Eliminada Muy poca varianza           
+NoOfAmpersandInURL            - Eliminada Muy poca varianza        
+NoOfOtherSpecialCharsInURL    - Eliminada Muy poca varianza                   
+SpacialCharRatioInURL         - Eliminada Muy poca varianza               
+IsHTTPS                       - Transf F           
+LineOfCode                    - Eliminada Muy poca varianza           
+LargestLineLength             - Eliminada Muy poca varianza               
+HasTitle                      - Transf F           
+Title                         - Eliminada            
+DomainTitleMatchScore         - Modificado a 2 categorias            
+URLTitleMatchScore            - Modificado a 3 categorias        
+HasFavicon                    - Transf F           
+Robots                        - Transf F    
+IsResponsive                  - Transf F             
+NoOfURLRedirect               - Transf F            
+NoOfSelfRedirect              - Transf F       
+HasDescription                - Transf F            
+NoOfPopup                     - Eliminada Muy poca varianza
+NoOfiFrame                    - Eliminada Muy poca varianza    
+HasExternalFormSubmit         - Transf F            
+HasSocialNet                  - Transf F    
+HasSubmitButton               - Transf F        
+HasHiddenFields               - Transf F    
+HasPasswordField              - Transf F        
+Bank                          - Transf F
+Pay                           - Transf F
+Crypto                        - Transf F    
+HasCopyrightInfo              - Transf F        
+NoOfImage                     - Eliminada Muy poca varianza
+NoOfCSS                       - Eliminada Muy poca varianza   
+NoOfJS                        - Eliminada Muy poca varianza   
+NoOfSelfRef                   - Eliminada Muy poca varianza   
+NoOfEmptyRef                  - Eliminada Muy poca varianza   
+NoOfExternalRef               - Eliminada Muy poca varianza   
+label                         - Transf F
