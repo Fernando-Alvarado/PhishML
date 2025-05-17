@@ -205,28 +205,8 @@ def predict_with_pca_model(data_path, pca_model_path='pca_results/pca_transforme
     # Load original data
     original_data = pd.read_csv(data_path)
     
-    # Preprocess the data in the same way as training data
-    X = original_data.drop(['label', 'FILENAME', 'URL', 'Domain', 'Title'], axis=1, errors='ignore')
-    
-    # Convert boolean columns to int
-    boolean_columns = X.select_dtypes(include=['bool']).columns
-    X[boolean_columns] = X[boolean_columns].astype(int)
-    
-    # Load preprocessing artifacts
-    scaler, label_encoders = load_preprocessing_artifacts()
-    
-    # Handle categorical columns
-    categorical_columns = X.select_dtypes(include=['object']).columns
-    for col in categorical_columns:
-        if col in label_encoders:
-            X[col] = label_encoders[col].transform(X[col].astype(str))
-        else:
-            # If a column wasn't seen during training, use a new encoder
-            le = LabelEncoder()
-            X[col] = le.fit_transform(X[col].astype(str))
-    
-    # Scale the data
-    X_scaled = scaler.transform(X)
+    # Use the same preprocessing function used during training
+    X_scaled, _ = load_and_preprocess_data(data_path)
     
     # Load PCA transformer and logistic regression model
     pca = joblib.load(pca_model_path)
