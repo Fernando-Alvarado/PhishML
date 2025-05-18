@@ -181,7 +181,67 @@ También se utilizan **enlaces trampa**, que aparentan ser funcionales pero no c
 
 
 
+# Diccionario crudo datos 
 
+## 📘 Diccionario de Datos – `PhishUII_Phishing_URL_Dataset.csv`
+
+| Variable | Descripción |
+|----------|-------------|
+| `FILENAME` | Nombre del archivo que contiene la URL. |
+| `URL` | Dirección completa del sitio web. |
+| `URLLength` | Longitud total de la URL. |
+| `DomainLength` | Longitud del dominio del sitio. |
+| `IsDomainIP` | Si el dominio es una dirección IP (1 = sí, 0 = no). |
+| `TLD` | Dominio de nivel superior (por ejemplo, com, org). |
+| `URLSimilarityIndex` | Índice de similitud con URLs legítimas conocidas. |
+| `CharContinuationRate` | Tasa de continuidad de caracteres repetidos. |
+| `TLDLegitimateProb` | Probabilidad de legitimidad del TLD. |
+| `URLCharProb` | Probabilidad promedio de aparición de caracteres en la URL. |
+| `TLDLength` | Longitud del TLD. |
+| `NoOfSubDomain` | Número de subdominios en la URL. |
+| `HasObfuscation` | Indica si hay ofuscación en la URL (1 = sí). |
+| `NoOfObfuscatedChar` | Número de caracteres ofuscados. |
+| `ObfuscationRatio` | Proporción de caracteres ofuscados respecto al total. |
+| `NoOfLettersInURL` | Número de letras (a-z, A-Z) en la URL. |
+| `LetterRatioInURL` | Proporción de letras sobre la longitud total de la URL. |
+| `NoOfDegitsInURL` | Número de dígitos (0–9) en la URL. |
+| `DegitRatioInURL` | Proporción de dígitos sobre la longitud total de la URL. |
+| `NoOfEqualsInURL` | Número de signos igual (`=`) en la URL. |
+| `NoOfMarkInURL` | Número de signos de puntuación comunes. |
+| `NoOfAmpersandInURL` | Número de veces que aparece `&` en la URL. |
+| `NoOfOtherSpecialCharsInURL` | Número de otros caracteres especiales. |
+| `SpacialCharRatioInURL` | Proporción de caracteres especiales sobre el total. |
+| `IsHTTPS` | Si la URL usa HTTPS (1 = sí, 0 = no). |
+| `LineOfCode` | Cantidad de líneas en el HTML de la página. |
+| `LargestLineLength` | Longitud de la línea más larga en el HTML. |
+| `HasTitle` | Si la página tiene una etiqueta `<title>` (1 = sí). |
+| `Title` | Texto dentro de la etiqueta `<title>`. |
+| `DomainTitleMatchScore` | Puntaje de coincidencia entre el dominio y el título. |
+| `URLTitleMatchScore` | Puntaje de coincidencia entre la URL y el título. |
+| `HasFavicon` | Si la página tiene ícono (favicon) (1 = sí). |
+| `Robots` | Si la página tiene archivo `robots.txt` (1 = sí). |
+| `IsResponsive` | Si la página responde correctamente (HTTP 200). |
+| `NoOfURLRedirect` | Número de redirecciones desde la URL original. |
+| `NoOfSelfRedirect` | Número de redirecciones internas dentro del mismo dominio. |
+| `HasDescription` | Si la página tiene etiqueta `<meta description>` (1 = sí). |
+| `NoOfPopup` | Número de ventanas emergentes. |
+| `NoOfIframe` | Número de etiquetas `<iframe>` encontradas. |
+| `HasExternalFormSubmit` | Si los formularios envían datos fuera del dominio. |
+| `HasSocialNet` | Si hay botones de redes sociales embebidos. |
+| `HasSubmitButton` | Si existe botón para enviar formularios. |
+| `HasHiddenFields` | Si el formulario tiene campos ocultos. |
+| `HasPasswordField` | Si el formulario contiene campo de contraseña. |
+| `Bank` | Si el contenido está relacionado con servicios bancarios. |
+| `Pay` | Si el contenido está relacionado con pagos electrónicos. |
+| `Crypto` | Si el contenido menciona criptomonedas. |
+| `HasCopyrightInfo` | Si contiene información de copyright. |
+| `NoOfImage` | Número de imágenes en la página. |
+| `NoOfCSS` | Número de hojas de estilo CSS. |
+| `NoOfJS` | Número de archivos JavaScript. |
+| `NoOfSelfRef` | Número de referencias internas. |
+| `NoOfEmptyRef` | Número de referencias vacías (`href="#"`, etc.). |
+| `NoOfExternalRef` | Número de enlaces hacia otros dominios. |
+| `Label` | Variable objetivo: 0 = phishing, 1 = legítimo. |
 
 
 
