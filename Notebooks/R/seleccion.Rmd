@@ -41,8 +41,6 @@ library(nortest )
 
 library(esquisse) # Graficacion sencilla
 
-# Libreria datos
-library(mlbench)      # Para cargar el dataset de mlbench)
 
 # Libreria eleccion modelos 
 library(glmnet)
@@ -57,7 +55,7 @@ library(scales)
 ```{r Data}
 
 setwd("C:/Users/ferna/Documents/PhishML/Data/Procesada")
-data <- readRDS("datalimpia.rds")
+datos <- readRDS("datalimpia.rds")
 
 
 ```
@@ -96,20 +94,13 @@ nueva_fila_resultados <- function( metodo, AIC, numero_bettas, vars) {
 }
 ```
 
-```{r Modelos}
-#Modelo logit
-modelo <- glm(label ~ ., family = binomial(link = "logit"), data = data)
-#modelo_nulo <- glm(label ~ 1, family = binomial(link = "logit"), data = data)
-#modelo2 <- " (.)^2"
-# Ver resumen
-summary(modelo)
-```
+
 
 
 ```{r Stepwise}
 
-StepwiseBack <- function(modelo, link = "logit",  data = data){
-   formula <- as.formula(paste("diabetes ~", modelo ))
+StepwiseBack <- function(modelo, link = "logit",  data = datos){
+   formula <- as.formula(paste("label ~", modelo ))
    model <- glm(formula, family = binomial(link = link), data = data)
    #Haciendolo Backward
    modelo_step <- step(
@@ -150,10 +141,10 @@ StepwiseBack <- function(modelo, link = "logit",  data = data){
 #Parametros:
 # modelo: modelo de regresion a evaluar 
 
-Rugalarizacion_Lasso <- function(modelo, link = "logit", data = data){
-    formula <- as.formula(paste("diabetes ~", modelo ))
+Rugalarizacion_Lasso <- function(modelo, link = "logit", data = datos){
+    formula <- as.formula(paste("label ~", modelo ))
     x <- model.matrix(formula , data = data)[, -1] #Quitando el intercepto 
-    y <- data$diabetes  #Variables binarias de si el paciente tiene o no diabetes
+    y <- data$label  #Variables binarias de si el paciente tiene o no diabetes
 
     #Ajusta el modelo lasso a nuestro modelo de regresion  sirve para ver las trayectoras de nuestro parametro lambda
     modelo_lasso <- glmnet(
@@ -243,7 +234,7 @@ regularizacion %>%
 
 AIC_lasso <- function(params, link="logit", data = data){
     coeficientes <-   params$coefs$predictor#
-    formula_GLM <- as.formula(paste("diabetes ~", paste(coeficientes, collapse = "+"))) 
+    formula_GLM <- as.formula(paste("label ~", paste(coeficientes, collapse = "+"))) 
     model <- glm(formula_GLM, family = binomial(link = link), data = data)  
     sal <- list(
         model = model,
@@ -264,8 +255,42 @@ joinData <- function(lista){
 
 ```
 
+```{r}
+
+modeloInteracciones <- StepwiseBack(" . ", "logit") # Modelo simple Stepwise
+df_resultados <- nueva_fila_resultados("SW_B logit", AIC(modeloInteracciones), length(modeloInteracciones$coefficients)-1, joinData(names(modeloInteracciones$coefficients)))
 
 
+simple <- Rugalarizacion_Lasso(" . ", "logit")   #Ejecutando nuestro primer modelo lasso
+df_resultados <- nueva_fila_resultados("L logit", AIC_lasso(simple, "logit")$AIC, length(simple$coefs$predictor), joinData(simple$coefs$predictor)) 
+
+
+
+StepB <- StepwiseBack("(.)^2", link = "logit") # Modelo cuadratico Stepwise
+df_resultados <- nueva_fila_resultados("SW_B interacciones logit", AIC(StepB), length(StepB$coefficients)-1, joinData(names(StepB$coefficients )))
+
+
+lassoB <- Rugalarizacion_Lasso("(.)^2", link = "logit")   #Ejecutando nuestro primer modelo lasso
+df_resultados <- nueva_fila_resultados("L interacciones logit", AIC_lasso(lassoB, "logit")$AIC, length(lassoB$coefs$predictor), joinData(lassoB$coefs$predictor ))
+
+```
+
+
+```{r}
+
+modeloInteracciones <- StepwiseBack(" . ", "probit") # Modelo simple Stepwise
+df_resultados <- nueva_fila_resultados("SW_B probit", AIC(modeloInteracciones), length(modeloInteracciones$coefficients)-1, joinData(names(modeloInteracciones$coefficients)))
+
+StepB <- StepwiseBack("(.)^2", link = "probit") # Modelo cuadratico Stepwise
+df_resultados <- nueva_fila_resultados("SW_B interacciones probit", AIC(StepB), length(StepB$coefficients)-1, joinData(names(StepB$coefficients )))
+
+modeloInteracciones <- StepwiseBack(" . ", "cloglog") # Modelo simple Stepwise
+df_resultados <- nueva_fila_resultados("SW_B cloglog", AIC(modeloInteracciones), length(modeloInteracciones$coefficients)-1, joinData(names(modeloInteracciones$coefficients)))
+
+StepB <- StepwiseBack("(.)^2", link = "cloglog") # Modelo cuadratico Stepwise
+df_resultados <- nueva_fila_resultados("SW_B interacciones cloglog", AIC(StepB), length(StepB$coefficients)-1, joinData(names(StepB$coefficients )))
+
+```
 
 
 

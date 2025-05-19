@@ -2,7 +2,17 @@
 title: "Limpieza - Dataset de Phishing"
 output: html_document
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 
+#Ruta de los datos en caso de que requiera
+
+#Cargamos nuestras librerías 
+library(ggplot2)
+library(dplyr)
+
+library(esquisse)
+```
 
 Archivo donde se seleccionaron las variables más importantes de nuestros datos. Esto se realizó gracias al archivo `exploracion.Rmd`, en el cual se llevó a cabo un análisis descriptivo y se consideraron variables categóricas, con varianza significativa y sin sesgo, para poder incluirlas en nuestro modelo de aprendizaje automático (ML).
 
@@ -65,7 +75,14 @@ datalimpia <- data %>%  dplyr::select(-FILENAME, -URL, -Domain,- Title, -NoOfObf
                           URLTitleMatchScore = case_when(
                                 URLTitleMatchScore >= 95 ~ "1",
                                 URLTitleMatchScore < 95 ~  "0",
+                          ),
+                          TLD = case_when(
+                                TLD == "com" ~ "com ",
+                                TLD == "org" ~ "org ",
+                                TLD == "net" ~ "net ",
+                                TRUE ~ "Other"     
                           ), 
+                          TLD = as.factor(TLD), 
                           URLTitleMatchScore = as.factor(URLTitleMatchScore)
                         )
 
