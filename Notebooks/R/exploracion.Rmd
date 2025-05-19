@@ -25,6 +25,14 @@ library(esquisse)
 
 
 
+Notebook donde se hizo un analisis exploratorio de los datos, para ver que variables eran relevantes para un modelo de ML, estos criterios fueron:
+- Varianza significativa
+- Sin sesgo
+- Datos relevantes
+
+Una vez logrado esto, 
+
+
 ```{r Data}
 
 

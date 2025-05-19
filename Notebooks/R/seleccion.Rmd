@@ -1,0 +1,304 @@
+---
+title: "Seleccion de modelos - Dataset de Phishing"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+#Empezamos limpiando nuestro ambiente
+rm(list = ls(all.names = TRUE))
+
+
+# Configuración global de los bloques de código (chunk's)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	fig.dim = c(5.0, 4.0),
+	fig.pos = "H",
+#Agregamos configuraciones para evitar mensajes de advertencias y de errores en el archivo
+	message = FALSE,
+	warning = FALSE,
+	error = F
+)
+
+
+
+# Librerias
+library(dplyr)      # Para el manejo de datos
+library(tidyr)
+library(tibble)    # Manejo de df
+library(ggplot2)    # Para realizar gráficas
+library(kableExtra) # Para un mejor manejo de tablas
+library(knitr)
+library(purrr)      # Para la función map y map2
+# Para purebas de hipotesis
+library(multcomp)   # Para pruebas de hipótesis
+library(car)        # Para funciones útiles de modelos de regresión lineal múltiple
+library(broom)      # Para obtener los residuales estandarizados
+library(purrr)      # Para la función map y map2
+library(lmtest )    #Checar homoceasticidad
+library(nortest )
+
+library(esquisse) # Graficacion sencilla
+
+# Libreria datos
+library(mlbench)      # Para cargar el dataset de mlbench)
+
+# Libreria eleccion modelos 
+library(glmnet)
+library(stats )
+library(bestglm) # Paquete para buscar el mejor subset de un glm 
+library(scales)
+
+```
+
+
+
+```{r Data}
+
+setwd("C:/Users/ferna/Documents/PhishML/Data/Procesada")
+data <- readRDS("datalimpia.rds")
+
+
+```
+
+```{r}
+head(data)
+```
+
+
+
+```{r Reultados_Datos}
+
+
+df_resultados <- data.frame(
+  Metodo = character(),
+  AIC = numeric(),
+  numero_bettas = integer(),
+  variables_select = character(), 
+  
+  stringsAsFactors = FALSE
+)
+
+
+nueva_fila_resultados <- function( metodo, AIC, numero_bettas, vars) {
+  fila <- data.frame(
+    Metodo = metodo,
+    AIC = AIC,
+    numero_bettas = numero_bettas,
+    variables_select = vars,
+    stringsAsFactors = FALSE
+  )
+  
+  df_resultados <- rbind(df_resultados, fila)
+  return(df_resultados)
+  
+}
+```
+
+```{r Modelos}
+#Modelo logit
+modelo <- glm(label ~ ., family = binomial(link = "logit"), data = data)
+#modelo_nulo <- glm(label ~ 1, family = binomial(link = "logit"), data = data)
+#modelo2 <- " (.)^2"
+# Ver resumen
+summary(modelo)
+```
+
+
+```{r Stepwise}
+
+StepwiseBack <- function(modelo, link = "logit",  data = data){
+   formula <- as.formula(paste("diabetes ~", modelo ))
+   model <- glm(formula, family = binomial(link = link), data = data)
+   #Haciendolo Backward
+   modelo_step <- step(
+      object = model,
+      direction = "backward",
+      scope = list(upper = model, lower = ~1),
+      trace = FALSE
+  )
+  return(modelo_step) 
+}
+
+
+
+# Ejemplos de las demas formas de hacer Stepwise
+
+#Haciendolo Fordward
+#modelo_forward <- step(
+#  object = modelo_nulo,
+#  direction = "forward",
+#  scope = list(lower = ~1, upper =  modelo),
+#  trace = FALSE
+#)
+
+
+
+# En ambas direcciones
+#modelo_both <- step(
+#  object = modelo_nulo,
+#  scope = list(lower = ~1, upper = modelo),
+#  direction = "both",
+#  trace = FALSE
+#)
+
+```
+
+```{r Funcion_lasso}
+#Funcion para genralizar la funcion lasso y pdoer evalur distintos modelos
+#Parametros:
+# modelo: modelo de regresion a evaluar 
+
+Rugalarizacion_Lasso <- function(modelo, link = "logit", data = data){
+    formula <- as.formula(paste("diabetes ~", modelo ))
+    x <- model.matrix(formula , data = data)[, -1] #Quitando el intercepto 
+    y <- data$diabetes  #Variables binarias de si el paciente tiene o no diabetes
+
+    #Ajusta el modelo lasso a nuestro modelo de regresion  sirve para ver las trayectoras de nuestro parametro lambda
+    modelo_lasso <- glmnet(
+    x = x,
+    y = y,
+    family = binomial(link = link),  
+    alpha = 1,          
+    standardize = TRUE,
+    nlambda = 100
+  )
+
+  #Ahora toca elegir el mejor lambda, para eso utilizaremos la validacion cruzada
+  cv_error <- cv.glmnet(
+              x      = x,
+              y      = y,
+              alpha  = 1,
+              nfolds = 10,
+              family = binomial(link = link),  
+              type.measure = "deviance",
+              standardize  = TRUE
+           )
+  
+   modelOut <- glmnet(
+            x           = x,
+            y           = y,
+            family = binomial(link = link),  
+            alpha       = 1,
+            lambda      = cv_error$lambda.1se,
+            standardize = TRUE
+    )
+  
+  df_coeficientes <- coef(modelOut) %>%
+                   as.matrix() %>%
+                   as_tibble(rownames = "predictor") %>%
+                   rename(coeficiente = s0)
+                   
+  out <- df_coeficientes %>%
+      filter(
+        predictor != "(Intercept)",
+        coeficiente != 0
+      ) 
+  salida <- list(
+      modelo_lasso = modelo_lasso,
+      cv_error = cv_error, 
+      coefs = out
+  )
+  return(salida)
+}
+
+#Fucnion para graficar como se ve la caide del parametro lambda en el ajuste lasso 
+#Parametros:
+# modelo: model, tenemos que pasar la salida de model_lasso, para que funcione y se calcule de la funcion Regularizacion_lasso
+
+graficacion_lasso <- function(param, data = data){
+  model_lasso = param$modelo_lasso
+  regularizacion <- model_lasso$beta %>% 
+                  as.matrix() %>%
+                  t() %>% 
+                  as_tibble() %>%
+                  mutate(lambda = model_lasso$lambda)
+
+regularizacion <- regularizacion %>%
+                   pivot_longer(
+                     cols = !lambda, 
+                     names_to = "predictor",
+                     values_to = "coeficientes"
+                   )
+
+regularizacion %>%
+  ggplot(aes(x = lambda, y = coeficientes, color = predictor)) +
+  geom_line() +
+  scale_x_log10(
+    breaks = trans_breaks("log10", function(x) 10^x),
+    labels = trans_format("log10", math_format(10^.x))
+  ) +
+  labs(title = "Coeficientes del modelo en función de la regularización") +
+  theme_bw() +
+  theme(legend.position = "none")
+}
+
+
+
+#Formula para recrear el modelo, a partir de las variables que nos dio la seleccion lasso
+#Parametros:
+# params: Modelo de lasso que le metemos a nuestro algoritmo para que funciones 
+# link: tipo de link que queremos usar, por defecto es logit
+
+AIC_lasso <- function(params, link="logit", data = data){
+    coeficientes <-   params$coefs$predictor#
+    formula_GLM <- as.formula(paste("diabetes ~", paste(coeficientes, collapse = "+"))) 
+    model <- glm(formula_GLM, family = binomial(link = link), data = data)  
+    sal <- list(
+        model = model,
+        AIC = AIC(model)
+    )  
+     return(sal)
+}
+
+# graficacion_lasso(simple )
+```
+
+```{r}
+joinData <- function(lista){
+  vars_sin_intercept <- setdiff(lista, "(Intercept)")
+  string_vars <- paste(vars_sin_intercept, collapse = ",")
+  return(string_vars)
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
