@@ -1,0 +1,197 @@
+---
+title: "PCA y FA de Phishing"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Ruta de los datos en caso de que requiera
+
+#Cargamos nuestras librerías 
+library(ggplot2)
+library(dplyr)
+#Librerias necesarias
+library(tidyverse)
+library(ggplot2)
+library(factoextra)
+library(dplyr)
+library(esquisse)
+library(scatterplot3d)
+library(factoextra)
+library(patchwork)
+
+
+library(esquisse)
+```
+
+```{r Data}
+
+setwd("C:/Users/ferna/Documents/PhishML/Data/Procesada")
+data <- readRDS("datalimpia.rds")
+
+
+```
+
+```{r}
+head(data)
+```
+
+
+```{r}
+#esquisser(data) 
+```
+
+# Checando correlacion 
+
+```{r}
+head(data)
+```
+
+
+```{r}
+library(rcompanion)
+
+cramerV(table(data$IsDomainIP, data$TLD))
+```
+
+```{r}
+# Variables categóricas (factores o cadenas)
+var_numeric <- data %>% dplyr::select(where(is.numeric))
+
+vars_cat <- data %>%  dplyr::select(where(is.factor))
+
+
+```
+
+
+```{r}
+library(vcd)
+
+# Obtener nombres de columnas categóricas
+cat_cols <- names(vars_cat)
+
+# Crear matriz vacía
+cramer_mat <- matrix(NA, nrow = length(cat_cols), ncol = length(cat_cols),
+                     dimnames = list(cat_cols, cat_cols))
+
+# Calcular Cramér's V
+for (i in cat_cols) {
+  for (j in cat_cols) {
+    cramer_mat[i, j] <- suppressWarnings(assocstats(table(vars_cat[[i]], vars_cat[[j]]))$cramer)
+  }
+}
+round(cramer_mat, 2)
+
+```
+
+```{r}
+library(corrplot)
+
+
+cor(var_numeric)
+
+corrplot(cor(var_numeric), method = "circle", type = "upper", tl.col = "black", tl.srt = 45, addCoef.col = "black")
+```
+
+
+
+```{r}
+corrplot(cramer_mat,
+         method = "circle",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,
+         tl.cex = 0.6
+         # addCoef.col = "black"  ← esto lo eliminas o comentas
+)
+
+
+```
+
+
+
+
+```{r Categoricas}
+nombresCat <- rownames(cramer_mat)
+pca <- prcomp(cramer_mat, scale. = TRUE)
+
+
+
+summary(pca)
+```
+
+```{r}
+pca2 <- prcomp(var_numeric, scale. = TRUE)
+
+
+
+summary(pca2)
+```
+
+
+```{r}
+#Grafica del Bracito 
+fviz_eig(pca, addlabels = TRUE, ylim = c(0, 100))
+```
+
+
+
+
+
+```{r}
+
+
+
+# Gráficas individuales
+g1 <- fviz_contrib(pca, choice = "var", axes = 1) + ggtitle("Contribucion al componente 1")
+g2 <- fviz_contrib(pca, choice = "var", axes = 2) + ggtitle("Contribucion al componente 2")
+
+# Lado a lado
+g1 + g2
+
+
+```
+
+
+```{r, echo=FALSE}
+#Interpretacion 
+
+cor(pca$x[,1:2], cramer_mat )
+```
+
+```{r,  fig.width=12, fig.height=8}
+fviz_pca_biplot(pca,
+                geom.ind = "none",  # Oculta individuos
+                col.var = "contrib",
+                gradient.cols = c("white", "blue", "red"))
+
+
+```
+
+
+
+
+
+```{r}
+#Grafica 
+fviz_pca_biplot(pca, repel = TRUE, col.var = "steelblue", col.ind = "gray30")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
