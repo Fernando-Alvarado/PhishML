@@ -105,7 +105,29 @@ write.csv(datalimpia, "C:/Users/ferna/Documents/PhishML/Data/Procesada/datalimpi
 ```
 
 
+
+# Segundo filtro 
+
+
+Para este filtro use PCA, para ello dividi los datos en categoricos y continues, para sacar sus correlaciones (con categoricos use el metodo de Kramer), luego hice PCA, y de los componentes vi cuales varaibles aportaban mas y fueron las que seleccione.
+
+
+
+```{r}
+filtro1 <- datalimpia %>% dplyr::select(label, HasSocialNet, HasCopyrightInfo, HasDescription, IsResponsive, HasSubmitButton, IsHTTPS, TLD, TLDLength, NoOfSubDomain, NoOfSelfRedirect, DomainLength, CharContinuationRate, TLDLegitimateProb)
+
+
+```
+
+
+```{r, GuardarRds }
+saveRDS(filtro1, file = "C:/Users/ferna/Documents/PhishML/Data/Procesada/filtroPCA1.rds")
+
+
+```
 ---
+
+
 
 ## Variables y su proceso de descarte o integración
 

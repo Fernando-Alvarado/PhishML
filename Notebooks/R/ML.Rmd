@@ -1,0 +1,118 @@
+---
+title: "ML - Dataset de Phishing"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Ruta de los datos en caso de que requiera
+
+#Cargamos nuestras librerías 
+library(ggplot2)
+library(dplyr)
+
+library(esquisse)
+library(tidymodels)
+library(tidyverse)
+library(skimr)
+library(DataExplorer)
+library(ggpubr)
+library(univariateML)
+library(GGally)
+library(doParallel)
+library(yardstick)
+```
+
+
+```{r}
+data <- readRDS( file = "C:/Users/ferna/Documents/PhishML/Data/Procesada/filtroPCA1.rds")
+
+summary(data)
+```
+
+
+```{r}
+set.seed(12673)
+split <- initial_split(data, prop = 0.7, strata = label)
+train_data <- training(split)
+test_data  <- testing(split)
+```
+
+
+
+
+```{r}
+# Modelo
+modelo_glm <- logistic_reg(
+  mode = "classification",
+  penalty = tune(),
+  mixture = tune()
+) %>%
+  set_engine("glmnet")
+
+# Receta
+transformer <- recipe(label ~ ., data = train_data) %>%
+  step_nzv(all_predictors()) %>%
+  step_center(all_numeric_predictors()) %>%
+  step_scale(all_numeric_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+# Folds de validación cruzada
+cv_folds <- vfold_cv(train_data, v = 5, strata = label)
+
+# Workflow
+workflow_modelado <- workflow() %>%
+  add_recipe(transformer) %>%
+  add_model(modelo_glm)
+
+# Grid
+hiperpar_grid <- grid_regular(
+  penalty(range = c(0, 1)),
+  mixture(range = c(0, 1)),
+  levels = 10
+)
+
+# Tuning
+registerDoParallel(cores = parallel::detectCores() - 2)
+
+grid_fit <- tune_grid(
+  object    = workflow_modelado,
+  resamples = cv_folds,
+  metrics   = metric_set(accuracy, sens, yardstick::spec),
+  control   = control_resamples(save_pred = TRUE),
+  grid      = hiperpar_grid
+)
+
+stopImplicitCluster()
+
+
+
+```
+
+```{r}
+best_params <- select_best(grid_fit, metric = "accuracy")
+
+
+final_model <- finalize_workflow(
+  workflow_modelado,
+  best_params
+)
+
+final_fit <- last_fit(final_model, split)
+
+collect_metrics(final_fit)
+
+```
+```{r}
+collect_predictions(final_fit) %>%
+  yardstick::f_meas(truth = label, estimate = .pred_class)
+
+```
+
+
+
+
+
+
