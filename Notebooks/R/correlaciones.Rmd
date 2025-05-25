@@ -1,0 +1,268 @@
+---
+title: "Exploracion de Variables - Dataset de Phishing"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Ruta de los datos en caso de que requiera
+
+#Cargamos nuestras librerías 
+library(ggplot2)
+library(dplyr)
+
+library(esquisse)
+```
+
+```{r Data}
+
+setwd("C:/Users/ferna/Documents/PhishML/Data/Procesada")
+data <- readRDS("datalimpia.rds")
+
+
+```
+
+```{r}
+head(data)
+```
+
+
+
+```{r}
+plot(data$CharContinuationRate)
+```
+
+
+
+```{r}
+#esquisser(data) 
+```
+
+
+```{r}
+ggplot(data) +
+  aes(x = TLD) +
+  geom_bar(fill = "#112446") +
+  theme_minimal()
+
+```
+
+```{r}
+variables <- data %>%
+  count(TLD) %>%               # cuenta cuántos hay por categoría
+  arrange(desc(n))             # los ordena de mayor a menor
+
+variables
+```
+
+```{r}
+com <- data %>%
+    filter(TLD == "com") %>%
+    select(TLD, label)
+#esquisser(com) 
+ggplot(com) +
+  aes(x = TLD, fill = label) +
+  geom_bar() +
+  scale_fill_manual(
+    values = c(`0` = "#D61D10",
+    `1` = "#107EC1")
+  ) +
+  theme_minimal()
+
+```
+
+
+
+```{r}
+prop <- data %>%
+  count(TLD) %>%
+  mutate(proporcion = n / sum(n)) %>%
+  mutate(proporcion = round(proporcion, 4)) %>%
+  arrange(desc(proporcion))
+
+prop
+
+```
+
+```{r}
+data <- data %>% dplyr::mutate(
+   TLD = case_when(
+                                TLD == "com" ~ "com ",
+                                TLD == "org" ~ "org ",
+                                TLD == "net" ~ "net ",
+                                TRUE ~ "Other"
+                                
+                          ), 
+   TLD = as.factor(TLD)
+) 
+
+
+```
+
+```{r}
+
+#esquisser(datalimpia)
+ggplot(data) +
+  aes(x = TLD, fill = label) +
+  geom_bar() +
+  scale_fill_manual(
+    values = c(`0` = "#DE2519",
+    `1` = "#0C62B8")
+  ) +
+  theme_minimal()
+
+
+```
+
+# Checando correlacion 
+
+```{r}
+head(data)
+```
+
+
+```{r}
+library(rcompanion)
+
+cramerV(table(data$IsDomainIP, data$TLD))
+```
+```{r}
+# Variables categóricas (factores o cadenas)
+var_numeric <- data %>% dplyr::select(where(is.numeric))
+
+vars_cat <- data %>%  dplyr::select(where(is.factor))
+
+var_numeric
+
+```
+
+
+```{r}
+library(vcd)
+
+# Obtener nombres de columnas categóricas
+cat_cols <- names(vars_cat)
+
+# Crear matriz vacía
+cramer_mat <- matrix(NA, nrow = length(cat_cols), ncol = length(cat_cols),
+                     dimnames = list(cat_cols, cat_cols))
+
+# Calcular Cramér's V
+for (i in cat_cols) {
+  for (j in cat_cols) {
+    cramer_mat[i, j] <- suppressWarnings(assocstats(table(vars_cat[[i]], vars_cat[[j]]))$cramer)
+  }
+}
+round(cramer_mat, 2)
+
+```
+
+```{r}
+library(corrplot)
+
+
+cor(var_numeric)
+
+corrplot(cor(var_numeric), method = "circle", type = "upper", tl.col = "black", tl.srt = 45, addCoef.col = "black")
+```
+
+
+
+```{r}
+corrplot(cramer_mat,
+         method = "circle",
+         type = "upper",
+         tl.col = "black",
+         tl.srt = 45,
+         tl.cex = 0.6
+         # addCoef.col = "black"  ← esto lo eliminas o comentas
+)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

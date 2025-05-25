@@ -13,7 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 #Cargamos nuestras librerías 
 library(ggplot2)
 library(dplyr)
- library(igraph) 
 library(gridExtra)  #Guarddar datos 
 
 library(naniar)
@@ -23,6 +22,14 @@ library(skimr)
 library(esquisse)
 ```
 
+
+
+Notebook donde se hizo un analisis exploratorio de los datos, para ver que variables eran relevantes para un modelo de ML, estos criterios fueron:
+- Varianza significativa
+- Sin sesgo
+- Datos relevantes
+
+Una vez logrado esto, 
 
 
 ```{r Data}
