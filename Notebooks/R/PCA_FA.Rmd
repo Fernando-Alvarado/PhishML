@@ -157,6 +157,9 @@ g1 + g2 + g3
 
 ```
 
+label,DomainLength, IsDomainIP, TLD, TLDLegitimateProb, URLCharProb, TLDLength,NoOfSubDomain, LetterRatioInURL, IsHTTPS
+
+
 ```{r}
 head(data)
 ```
@@ -181,7 +184,7 @@ g12 + g22
 filtro <- data %>% dplyr::select(label, HasSocialNet, HasCopyrightInfo, HasDescription, IsResponsive, HasSubmitButton, IsHTTPS, TLD, TLDLength, NoOfSubDomain, NoOfSelfRedirect, DomainLength, CharContinuationRate, TLDLegitimateProb)
 
 summary(filtro)
-```
+``` 
 
 ```{r, echo=FALSE}
 #Interpretacion 
