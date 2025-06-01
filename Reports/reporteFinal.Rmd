@@ -1,0 +1,68 @@
+# Reporte Final — Detección de Sitios de Phishing con Machine Learning
+
+## 1. Introducción
+
+- ¿Qué es el *phishing*?
+- Importancia de la ciberseguridad
+- Objetivo del proyecto
+
+## 2. Descripción del conjunto de datos
+
+- Fuente del dataset
+- Variables originales
+- Preprocesamiento inicial
+
+## 3. Análisis Exploratorio de Datos (EDA)
+
+- Estadísticas descriptivas
+- Distribuciones y correlaciones
+- Detección de valores atípicos
+
+## 4. Reducción de Dimensionalidad
+
+### 4.1 Análisis de Componentes Principales (PCA)
+- Justificación
+- Varianza explicada
+
+### 4.2 Análisis Factorial (FA)
+- Comparación con PCA
+- Interpretación
+
+## 5. Selección y Evaluación de Modelos
+
+### 5.0 Metodologia del ML
+- Dar una explicacion de como trabaja el ML
+
+
+### 5.1 Preparación de los datos
+- Filtrado y selección de variables
+- División train/test
+
+### 5.2 Métodos de selección de variables
+- Stepwise (Forward, Backward)
+- Comparación con técnicas automáticas
+
+### 5.3 Modelos evaluados
+- Regresión logística (`glm`)
+- Redes neuronales
+- Otros (si aplica)
+
+## 6. Modelo Final
+
+- Modelo seleccionado y justificación
+- Métricas finales (Accuracy, ROC, etc.)
+- Lista de reglas o condiciones para replicar
+- Validación cruzada
+
+## 7. Conclusiones
+
+- Resultados más relevantes
+- Limitaciones
+- Recomendaciones futuras
+
+## 8. Apéndice
+
+- Código relevante (opcional)
+- Resultados intermedios
+
+## 9. Bibliografía

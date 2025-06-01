@@ -53,7 +53,7 @@ HasSocialNet, HasCopyrightInfo, HasDescription, NoOfSelfRedirect
 ```{r}
 # label,DomainLength, HasSocialNet, HasCopyrightInfo
 
-data <- data %>% dplyr::select(label,DomainLength, IsDomainIP, TLD, TLDLength,NoOfSubDomain, LetterRatioInURL, IsHTTPS, HasSocialNet, HasCopyrightInfo, HasDescription, NoOfSelfRedirect  )
+data <- data %>% dplyr::select(label,DomainLength, IsDomainIP, TLD, TLDLength,NoOfSubDomain, LetterRatioInURL, IsHTTPS )
 ```
 
 
