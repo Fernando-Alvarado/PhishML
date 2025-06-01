@@ -26,16 +26,40 @@ library(yardstick)
 ```
 
 
+
+
+
+
+
+
 ```{r}
-data <- readRDS( file = "C:/Users/ferna/Documents/PhishML/Data/Procesada/filtroPCA1.rds")
+data <- readRDS( file = "C:/Users/ferna/Documents/PhishML/Data/Procesada/datalimpia.rds")
 
 summary(data)
+```
+HasSocialNet, HasCopyrightInfo, HasDescription, NoOfSelfRedirect 
+
+- `DomainLength`
+- `IsDomainIP`
+- `TLD`
+- `TLDLegitimateProb`
+- `URLCharProb`
+- `TLDLength`
+- `NoOfSubDomain`
+- `LetterRatioInURL`
+- `IsHTTPS`
+
+
+```{r}
+# label,DomainLength, HasSocialNet, HasCopyrightInfo
+
+data <- data %>% dplyr::select(label,DomainLength, IsDomainIP, TLD, TLDLength,NoOfSubDomain, LetterRatioInURL, IsHTTPS )
 ```
 
 
 ```{r}
 set.seed(12673)
-split <- initial_split(data, prop = 0.7, strata = label)
+split <- initial_split(data, prop = 0.8, strata = label)
 train_data <- training(split)
 test_data  <- testing(split)
 ```
@@ -101,16 +125,28 @@ final_model <- finalize_workflow(
 )
 
 final_fit <- last_fit(final_model, split)
-
 collect_metrics(final_fit)
 
+
+
+
+
 ```
+
 ```{r}
 collect_predictions(final_fit) %>%
   yardstick::f_meas(truth = label, estimate = .pred_class)
 
-```
+library(yardstick)
 
+collect_predictions(final_fit) %>%
+  conf_mat(truth = label, estimate = .pred_class) %>%
+  summary() %>%
+  dplyr::filter(.metric %in% c("ppv", "npv"))
+
+
+
+```
 
 
 
