@@ -1,68 +1,103 @@
-# Reporte Final — Detección de Sitios de Phishing con Machine Learning
+# Detección de Sitios de Phishing con Machine Learning
 
-## 1. Introducción
+**Integrantes**
 
++ Alvarado Palacios Fernando
++ Owuen Rodriguez Figueroa Kenzil
++ Ruiz Castillo Carlo
+
+### 1. Introducción
 - ¿Qué es el *phishing*?
-- Importancia de la ciberseguridad
-- Objetivo del proyecto
+- Breve panorama sobre la ciberseguridad.
+- Objetivo general del proyecto.
+- Objetivos específicos (si cada integrante tuvo un modelo propio).
+- Estructura del documento.
 
-## 2. Descripción del conjunto de datos
+### 2. Descripción del Conjunto de Datos
+- Fuente del dataset.
+- Número de observaciones y variables.
+- Variables originales.
+- Tipo de variables (numéricas, categóricas, etc.).
+- Preprocesamiento común (limpieza, codificación, etc.).
 
-- Fuente del dataset
-- Variables originales
-- Preprocesamiento inicial
+### 3. Análisis Exploratorio de Datos (EDA)
+- Estadísticas descriptivas generales.
+- Visualización de distribuciones.
+- Correlaciones entre variables.
+- Identificación de valores atípicos.
 
-## 3. Análisis Exploratorio de Datos (EDA)
+### 4. Reducción de Dimensionalidad
 
-- Estadísticas descriptivas
-- Distribuciones y correlaciones
-- Detección de valores atípicos
+#### 4.1 Análisis de Componentes Principales (PCA)
 
-## 4. Reducción de Dimensionalidad
+Para este primer analisis cargamos los datos preprocesados **(Punto 2)**. Ademas quitamos variables como **Titulo**, **url** y **domain** ya que estas variables ya estan representadas en otras features, por lo que teniendo nuestro preprocesamiento, estandarizamos nuestros datos para que **PCA** pueda trabajar.
 
-### 4.1 Análisis de Componentes Principales (PCA)
-- Justificación
-- Varianza explicada
-
-### 4.2 Análisis Factorial (FA)
-- Comparación con PCA
-- Interpretación
-
-## 5. Selección y Evaluación de Modelos
-
-### 5.0 Metodologia del ML
-- Dar una explicacion de como trabaja el ML
+ De nuestro primer <strong> PCA </strong> exploratorio, pudimos encontrar que necesitamos al menos 20 componenetes para poder explicar al menos el <strong> 75% </strong> de la varianza y para explicar el <strong> 80% </strong> se necesitaban casi 30 componentes. Sin embargo se puede ver un quiebre del segundo al tercer componente. Por la regla del codo (imagen no mostrada) y por simplicidad intentemos trabajar con 2 componentes principales.
 
 
-### 5.1 Preparación de los datos
-- Filtrado y selección de variables
-- División train/test
+<div style="display: flex; align-items: center; justify-content: space-between;">
+  <div style="width: 60%;">
+    <p>
+     gdf
+    </p>
+  </div>
+  <div style="width: 35%; text-align: right;">
+    <img src="Imagenes/PCA_Carlo.png" width="300px" />
+  </div>
+</div>
 
-### 5.2 Métodos de selección de variables
-- Stepwise (Forward, Backward)
-- Comparación con técnicas automáticas
+- Criterio para seleccionar el número de componentes.
+- Varianza explicada.
+- Interpretación de los primeros componentes.
 
-### 5.3 Modelos evaluados
-- Regresión logística (`glm`)
-- Redes neuronales
-- Otros (si aplica)
+#### 4.2 Análisis Factorial (FA)
+- Comparación con PCA (si aplica).
+- Factores obtenidos.
+- Interpretación.
 
-## 6. Modelo Final
+### 5. Selección de Variables
+- Métodos utilizados:
+  - Stepwise (Forward, Backward, Both).
+  - PCA + carga factorial.
+  - Otras técnicas si se aplicaron.
+- Resultados por integrante (pueden listar qué variables eligió cada quien).
 
-- Modelo seleccionado y justificación
-- Métricas finales (Accuracy, ROC, etc.)
-- Lista de reglas o condiciones para replicar
-- Validación cruzada
+### 6. Modelado Individual
 
-## 7. Conclusiones
+#### 6.1 Modelo A — *Nombre del integrante A*
+- Algoritmo elegido (e.g., regresión logística, árbol de decisión, etc.).
+- Justificación.
+- Variables utilizadas.
+- Proceso de entrenamiento y validación.
+- Métricas de desempeño.
+- Observaciones importantes.
 
-- Resultados más relevantes
-- Limitaciones
-- Recomendaciones futuras
+#### 6.2 Modelo B — *Nombre del integrante B*
+- (estructura igual a la anterior)
 
-## 8. Apéndice
+#### 6.3 Modelo C — *Nombre del integrante C*
+- (estructura igual a la anterior)
 
-- Código relevante (opcional)
-- Resultados intermedios
+### 7. Comparación de Modelos
+- Tabla comparativa con métricas (Accuracy, Precision, Recall, F1, AUC).
+- Fortalezas y debilidades de cada modelo.
+- Consideraciones de interpretabilidad, tiempo de entrenamiento, etc.
 
-## 9. Bibliografía
+### 8. Modelo Final Seleccionado
+- Criterios de selección (mejor desempeño, consistencia, interpretabilidad...).
+- Algoritmo elegido.
+- Variables utilizadas.
+- Métricas finales obtenidas.
+- Validación cruzada.
+- Lista de reglas para replicar el modelo (puede incluir código pseudolenguaje).
+
+### 9. Conclusiones Generales
+- Resultados más relevantes.
+- Aportes individuales al proyecto.
+- Limitaciones del estudio.
+- Posibles mejoras o líneas futuras de investigación.
+
+
+### 11. Bibliografía
+- Formato APA o IEEE según se les haya solicitado.
+

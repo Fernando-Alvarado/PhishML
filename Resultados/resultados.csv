@@ -1,4 +1,6 @@
 VariablesUsadas, Accuracy, ppv, npv
 "DomainLength_IsDomainIP_TLD_TLDLength_NoOfSubDomain_LetterRatioInURL_IsHTTPS_HasSocialNet_HasCopyrightInfo_HasDescription_NoOfSelfRedirect", 0.9718399, 0.9799969, 0.9660148
-"label_DomainLength_IsDomainIP_TLD_TLDLength_NoOfSubDomain_LetterRatioInURL_IsHTTPS", 0.8014377, 0.9933461, 0.7432574	
+"label_DomainLength_IsDomainIP_TLD_TLDLength_NoOfSubDomain_LetterRatioInURL_IsHTTPS", 0.8014377, 0.9933461, 0.7432574
+"Usando Stepwise y seleccion de variables", 0.8209038, 0.9973740, 0.7619788
+
 

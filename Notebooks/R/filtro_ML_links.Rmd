@@ -1,0 +1,75 @@
+---
+title: "Interacciones"
+author: "Fernando Alvarado"
+date: "2025-06-01"
+output: html_document
+---
+
+En este notebook quiero checar manualemnte las interaciones de mis variables, para ver cualesson relevantes y pueden ayudar a mejor mi modelo de ml 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Ruta de los datos en caso de que requiera
+
+#Cargamos nuestras librerías 
+library(ggplot2)
+library(dplyr)
+
+library(esquisse)
+library(tidymodels)
+library(tidyverse)
+library(skimr)
+library(DataExplorer)
+library(ggpubr)
+library(univariateML)
+library(GGally)
+library(doParallel)
+library(yardstick)
+```
+
+
+
+
+```{r}
+datosRaw <- readRDS( file = "C:/Users/ferna/Documents/PhishML/Data/Procesada/datalimpia.rds")
+
+summary(datosRaw)
+```
+
+
+
+
+```{r}
+
+filtroLink <- datosRaw %>%
+        dplyr::select(label, DomainLength, IsDomainIP, TLD, TLDLength,NoOfSubDomain, LetterRatioInURL, IsHTTPS)
+
+
+interacciones_df <- model.matrix(~ .^2, data = filtroLink)[, -1] %>%  # ^2 = hasta interacciones de orden 2
+  as.data.frame()
+
+
+interacciones_df <- cbind(interacciones_df, label = datosRaw$label)  # Agregando la variable Y al dataframe de interacciones
+colnames(interacciones_df) <- gsub(":", "_x_", colnames(interacciones_df))
+
+
+interacciones_df
+```
+
+
+
+```{r}
+
+length(interacciones_df)
+
+```
+```{r}
+esquisse::esquisser(interacciones_df)
+```
+
+
+
+
+

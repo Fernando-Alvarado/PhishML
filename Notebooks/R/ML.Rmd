@@ -26,6 +26,31 @@ library(yardstick)
 ```
 
 
+```{r filtro}
+
+StepwiseBack <- function(modelo, link = "logit",  datos){
+  
+   formula <- as.formula(paste("label ~ ", modelo ))
+  
+   model <- glm(formula, family = binomial(link = link), data = datos)
+   
+   #print( summary(model))
+   #Haciendolo Backward
+   modelo_step <- stats::step(
+      object = model,
+      direction = "backward",
+      scope = list(upper = model, lower = ~1),
+      trace = FALSE
+  )
+    
+  return(modelo_step) 
+}
+
+
+
+
+
+```
 
 
 
@@ -33,9 +58,9 @@ library(yardstick)
 
 
 ```{r}
-data <- readRDS( file = "C:/Users/ferna/Documents/PhishML/Data/Procesada/datalimpia.rds")
+datosRaw <- readRDS( file = "C:/Users/ferna/Documents/PhishML/Data/Procesada/datalimpia.rds")
 
-summary(data)
+summary(datosRaw)
 ```
 HasSocialNet, HasCopyrightInfo, HasDescription, NoOfSelfRedirect 
 
@@ -51,10 +76,74 @@ HasSocialNet, HasCopyrightInfo, HasDescription, NoOfSelfRedirect
 
 
 ```{r}
+
+filtroLink <- datosRaw %>%
+        dplyr::select( DomainLength, IsDomainIP, TLD, TLDLength,NoOfSubDomain, LetterRatioInURL, IsHTTPS)
+
+
+interacciones_df <- model.matrix(~ .^2, data = filtroLink)[, -1] %>%  # ^2 = hasta interacciones de orden 2
+  as.data.frame()
+
+
+interacciones_df <- cbind(interacciones_df, label = datosRaw$label)  # Agregando la variable Y al dataframe de interacciones
+colnames(interacciones_df) <- gsub(":", "_x_", colnames(interacciones_df))
+
+
+interacciones_df
+
+
+
+
+```
+
+
+```{r}
+interacciones_df$`TLDorg `
+```
+
+
+
+```{r}
+filtroInteracciones <-  interacciones_df %>%
+  dplyr::select(label, `DomainLength_x_IsHTTPS1`, `DomainLength_x_TLDnet `,`DomainLength_x_TLDorg `, `DomainLength_x_TLDOther`, `DomainLength_x_LetterRatioInURL`, `TLDnet _x_LetterRatioInURL`, `TLDorg _x_LetterRatioInURL`,  `TLDOther_x_LetterRatioInURL`, `NoOfSubDomain0_x_LetterRatioInURL`, `NoOfSubDomain1_x_LetterRatioInURL`) %>%
+  mutate(
+    DomainLength = datosRaw$DomainLength, 
+    IsDomainIP = datosRaw$IsDomainIP, 
+    TLD = datosRaw$TLD, 
+    TLDLength = datosRaw$TLDLength,
+    NoOfSubDomain = datosRaw$NoOfSubDomain, 
+    LetterRatioInURL = datosRaw$LetterRatioInURL,
+    IsHTTPS = datosRaw$IsHTTPS
+  )
+
+
+filtroInteracciones
+```
+
+
+
+
+```{r}
+StepwiseBack("(.)", link = "logit", filtroInteracciones)
+```
+TLD
+
+```{r}
 # label,DomainLength, HasSocialNet, HasCopyrightInfo
 
-data <- data %>% dplyr::select(label,DomainLength, IsDomainIP, TLD, TLDLength,NoOfSubDomain, LetterRatioInURL, IsHTTPS )
+#data <- datosRaw %>% dplyr::select(label,DomainLength, IsDomainIP, TLD, TLDLength,NoOfSubDomain, LetterRatioInURL, IsHTTPS )
+data <- interacciones_df %>% dplyr::select(DomainLength_x_IsHTTPS1,  `DomainLength_x_TLDnet `,  DomainLength_x_TLDOther, DomainLength_x_LetterRatioInURL , `TLDnet _x_LetterRatioInURL`, `TLDorg _x_LetterRatioInURL`, TLDOther_x_LetterRatioInURL, NoOfSubDomain1_x_LetterRatioInURL, IsDomainIP1,  TLDLength2, TLDLength3,  NoOfSubDomain0, NoOfSubDomain1, LetterRatioInURL, IsHTTPS1, label
+) %>%
+  mutate(
+    TLD = datosRaw$TLD,
+    LetterRatioInURL = datosRaw$LetterRatioInURL,# No
+    IsDomainIP = datosRaw$IsDomainIP,
+    DomainLength = datosRaw$DomainLength
+  )
+
+data
 ```
+
 
 
 ```{r}
