@@ -134,7 +134,7 @@ saveRDS(filtro1, file = "C:/Users/ferna/Documents/PhishML/Data/Procesada/filtroP
 En esta sección se describe el proceso mediante el cual se evaluaron las variables del conjunto de datos para decidir su descarte o integración al modelo. Se analizaron criterios como la varianza, la presencia de sesgo, la correlación con la variable objetivo y la importancia en el análisis exploratorio previo.
 
 
-
+Variable                      Categoria/Transformacion
 
 FILENAME                      - Eliminada
 URL                           - Eliminada                  

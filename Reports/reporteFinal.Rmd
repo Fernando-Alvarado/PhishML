@@ -1,3 +1,32 @@
+---
+title: "Detección de Sitios de Phishing con Machine Learning"
+author: "Tu Nombre o Equipo"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+#Empezamos limpiando nuestro ambiente
+rm(list = ls(all.names = TRUE))
+
+
+# Configuración global de los bloques de código (chunk's)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	fig.dim = c(5.0, 4.0),
+	fig.pos = "H",
+#Agregamos configuraciones para evitar mensajes de advertencias y de errores en el archivo
+	message = FALSE,
+	warning = FALSE,
+	error = F
+)
+
+library(htmltools)
+```
+
 # Detección de Sitios de Phishing con Machine Learning
 
 **Integrantes**
@@ -18,7 +47,91 @@
 - Número de observaciones y variables.
 - Variables originales.
 - Tipo de variables (numéricas, categóricas, etc.).
-- Preprocesamiento común (limpieza, codificación, etc.).
+
+#### Preprocesamiento de los datos
+
+
+```{r}
+
+
+bloque_html <- div(
+  style = "display: flex; align-items: center; justify-content: space-between;",
+  
+  # Columna izquierda con el texto
+  div(
+    style = "width: 60%;",
+    p(
+      HTML(
+        "Primero se realizó una selección preliminar de variables, basada en la varianza. 
+        Las variables con muy poca varianza no aportan información útil para un modelo de 
+        <strong>Machine Learning</strong>, ya que su comportamiento es casi constante.
+        Por ejemplo, la variable <strong>NoOfAmpersandInUrl</strong> presentaba valores distintos 
+        de cero en muy pocos casos, por lo que fue descartada."
+      )
+    )
+  ),
+  
+  # Columna derecha con la imagen
+  div(
+    style = "width: 35%; text-align: right;",
+    tags$img(src = "Imagenes/NoOfAmpersandInUrl.jpg", width = "300px")
+  )
+)
+
+# Para mostrarlo en un documento o en Shiny
+browsable(bloque_html)
+
+```
+
+
+
+Posteriormente, se transformaron a tipo `factor` aquellas variables que no eran continuas.  Además, se analizó el número de niveles de cada variable categórica, ya que aquellas con demasiados niveles generaban modelos de *ML* computacionalmente costosos y lentos de entrenar.
+
+```{r bloque_tld, echo = FALSE, message = FALSE, warning = FALSE}
+library(htmltools)
+
+div_tld <- div(
+  style = "display: flex; align-items: center; justify-content: space-between;",
+  
+  # Columna izquierda: texto explicativo
+  div(
+    style = "width: 60%;",
+    HTML(paste0(
+      "<p><strong>TLD</strong> (Top-Level Domain) contenía aproximadamente 650 niveles distintos. 
+      Para reducir la complejidad del modelo, se analizó la proporción de aparición de cada TLD en 
+      el conjunto de datos. Se conservaron los tres más representativos:</p>
+      <ul>
+        <li><code>.com</code> (47.7% de participación)</li>
+        <li><code>.org</code> (7.9% de participación)</li>
+        <li><code>.net</code> (3% de participación)</li>
+      </ul>
+      <p>Los demás niveles se agruparon bajo la categoría <strong>Other</strong>.</p>"
+    ))
+  ),
+  
+  # Columna derecha: imagen
+  div(
+    style = "width: 35%; text-align: right;",
+    tags$img(src = "Imagenes/TLD.jpg", width = "300px")
+  )
+)
+
+browsable(div_tld)
+```
+
+
+
+
+Este mismo procedimiento de reducción de niveles se aplicó a otras variables categóricas:
+
+- **TLDLength** → transformada en 3 niveles.
+- **NoOfSubDomain** → transformada en 3 niveles.
+- **DomainTitleMatchScore** → transformada en 2 niveles.
+- **URLTitleMatchScore** → transformada en 2 niveles.
+
+Estas transformaciones permiten disminuir la dimensionalidad categórica sin perder información relevante, optimizando así la eficiencia del modelo de *Machine Learning*.
+
+
 
 ### 3. Análisis Exploratorio de Datos (EDA)
 - Estadísticas descriptivas generales.
@@ -28,39 +141,57 @@
 
 ### 4. Reducción de Dimensionalidad
 
-#### 4.1 Análisis de Componentes Principales (PCA)
+#### 4.1 Análisis PCA Exploratorio
 
-Para este primer analisis cargamos los datos preprocesados **(Punto 2)**. Ademas quitamos variables como **Titulo**, **url** y **domain** ya que estas variables ya estan representadas en otras features, por lo que teniendo nuestro preprocesamiento, estandarizamos nuestros datos para que **PCA** pueda trabajar.
+Para este primer análisis, cargamos los datos preprocesados (**Punto 2**). Además, eliminamos variables como **Titulo**, **url** y **domain**, ya que estas ya están representadas en otras *features*. Con el preprocesamiento listo, estandarizamos los datos para que el análisis **PCA** pueda aplicarse correctamente.
 
- De nuestro primer <strong> PCA </strong> exploratorio, pudimos encontrar que necesitamos al menos 20 componenetes para poder explicar al menos el <strong> 75% </strong> de la varianza y para explicar el <strong> 80% </strong> se necesitaban casi 30 componentes. Sin embargo se puede ver un quiebre del segundo al tercer componente. Por la regla del codo (imagen no mostrada) y por simplicidad intentemos trabajar con 2 componentes principales.
+En el primer análisis exploratorio mediante **PCA**, observamos que se necesitan al menos 20 componentes principales para explicar el **75%** de la varianza, y cerca de 30 componentes para alcanzar el **80%**. Sin embargo, se identifica un quiebre significativo entre el segundo y el tercer componente.
+
+Siguiendo la regla del codo (*scree plot*, imagen no mostrada) y por simplicidad del modelo, se decide trabajar inicialmente con **2 componentes principales**.
 
 
-<div style="display: flex; align-items: center; justify-content: space-between;">
-  <div style="width: 60%;">
-    <p>
-     gdf
-    </p>
-  </div>
-  <div style="width: 35%; text-align: right;">
-    <img src="Imagenes/PCA_Carlo.png" width="300px" />
-  </div>
-</div>
+```{r bloque_pca, echo = FALSE, message = FALSE, warning = FALSE}
+library(htmltools)
 
-- Criterio para seleccionar el número de componentes.
-- Varianza explicada.
-- Interpretación de los primeros componentes.
+div_pca <- div(
+  style = "display: flex; align-items: center; justify-content: space-between;",
+  
+  # Imagen izquierda: tabla_pca.jpg
+  div(
+    style = "width: 40%;",
+    tags$img(src = "Imagenes/tabla_pca.jpg", style = "width: 100%;")
+  ),
+  
+  # Imagen derecha: PCA_Carlo.png
+  div(
+    style = "width: 60%; text-align: right;",
+    tags$img(src = "Imagenes/PCA_Carlo.png", style = "width: 100%;")
+  )
+)
+
+browsable(div_pca)
+```
+
+
+
+#### Interpretación de Componentes Principales
+
+El **Componente 1** se asocia con características relacionadas con la legitimidad de la página. Este componente agrupa variables que reflejan qué tan similar es la URL a sitios legítimos, así como la presencia de indicadores de autenticidad, como `HasCopyrightInfo`, `HasSocialNet` y `URLSimilarity`. En este eje, una mayor cantidad de caracteres especiales en la URL suele estar negativamente relacionada con la legitimidad.
+
+El **Componente 2**, por otro lado, está vinculado principalmente con el análisis léxico estático de la URL y mecanismos de *ofuscación*. Este componente captura la intención maliciosa del atacante al modificar la estructura de la URL, por ejemplo, incluyendo un número excesivo de caracteres, dígitos, símbolos de redirección (`/`, `//`), parámetros de consulta (`?`, `=`), o elementos que simulan botones para el envío de formularios.
+
+En resumen, podríamos interpretar que:
+
+- El **Componente 1** representa señales de **defensa contra phishing**, al contener marcadores de legitimidad.
+- El **Componente 2** refleja características asociadas al **ataque de phishing**, ya que concentra indicadores de comportamiento malicioso o engañoso.
+
+
 
 #### 4.2 Análisis Factorial (FA)
 - Comparación con PCA (si aplica).
 - Factores obtenidos.
 - Interpretación.
 
-### 5. Selección de Variables
-- Métodos utilizados:
-  - Stepwise (Forward, Backward, Both).
-  - PCA + carga factorial.
-  - Otras técnicas si se aplicaron.
-- Resultados por integrante (pueden listar qué variables eligió cada quien).
 
 ### 6. Modelado Individual
 
@@ -72,8 +203,64 @@ Para este primer analisis cargamos los datos preprocesados **(Punto 2)**. Ademas
 - Métricas de desempeño.
 - Observaciones importantes.
 
-#### 6.2 Modelo B — *Nombre del integrante B*
-- (estructura igual a la anterior)
+#### 6.2 Modelo B — *Fernando Alvarado Palacios*
+
+##### Objetivo
+
+El objetivo principal al desarrollar este modelo de *Machine Learning* fue sentar las bases para un **software** capaz de predecir, a partir de un enlace, si una página web es peligrosa o representa un intento de *phishing*. Para ello, se seleccionaron variables que describen detalladamente las distintas partes de una URL.
+
+Esta decisión de limitar los datos de entrenamiento exclusivamente a características extraídas del enlace se justificó al observar que, con otros subconjuntos de datos, se alcanzó una **accuracy superior al 95%**. Esto motivó que el enfoque del modelo se orientara hacia una aplicación práctica.
+
+##### Algoritmo Elegido
+
+Se eligió un modelo **GLM de regresión logística**, ya que permite realizar clasificación binaria basada en probabilidades, además de ofrecer interpretabilidad sobre la influencia de las variables en la predicción.
+
+##### Proceso de Entrenamiento
+
+Inicialmente, se filtraron las variables directamente asociadas al enlace, y se entrenó un modelo considerando únicamente **efectos principales**. Este primer modelo alcanzó:
+
+- **Accuracy =** 0.8014377  
+- **PPV (Valor Predictivo Positivo) =** 0.9933461  
+- **NPV (Valor Predictivo Negativo) =** 0.7432574  
+
+La baja proporción de verdaderos negativos (NPV) nos llevó a considerar la inclusión de **interacciones entre variables** para mejorar el rendimiento del modelo.
+
+
+
+<div style="display: flex; align-items: center; justify-content: space-between;">
+  <div style="width: 60%;">
+    <p>
+En el caso del modelo con <strong>interacciones entre variables</strong>, se realizó un filtrado previo debido a que el conjunto de datos generaba aproximadamente 70 nuevas variables adicionales, además de las variables de efectos principales. Este incremento elevaba significativamente la complejidad del modelo.
+
+El proceso de selección consistió en dos etapas:
+
+1. <strong>Eliminación de variables con varianza cero</strong>, ya que estas no aportan información útil al modelo.  
+2. <strong>Aplicación del algoritmo Stepwise Backward</strong>, que se basa en la métrica <strong>AIC</strong> (<em>Akaike Information Criterion</em>).
+
+Este método comienza con un modelo que incluye todas las variables (efectos principales + interacciones) y, de manera iterativa, elimina una variable a la vez. En cada paso evalúa si la eliminación reduce el AIC. El modelo final seleccionado es aquel que presenta el <strong>menor valor de AIC</strong>, ya que esto indica un mejor equilibrio entre bondad de ajuste y complejidad del modelo.
+    </p>
+  </div>
+  <div style="width: 40%; text-align: right;">
+    <img src="Imagenes/FiltroML.jpg" width="100%" />
+  </div>
+</div>
+
+Después del filtrado y la selección de variables mediante el algoritmo *Stepwise Backward*, el modelo final obtuvo los siguientes puntajes:
+
+- **Accuracy =** 0.8209038  
+- **PPV (Valor Predictivo Positivo) =** 0.9973740  
+- **NPV (Valor Predictivo Negativo) =** 0.7619788  
+
+Este proceso de selección logró una ligera mejora en la proporción de verdaderos negativos, fortaleciendo el rendimiento general del modelo.
+
+##### Conclusiones del Modelo
+
+La principal debilidad del modelo sigue siendo la **tasa de verdaderos negativos**. Aunque se alcanzó un valor superior al **75%**, este sigue siendo bajo considerando el alto riesgo asociado a un ataque de *phishing*. 
+
+El modelo puede funcionar como una **primera barrera de protección**, pero no es suficiente por sí solo. Para mejorar la detección, sería necesario incorporar información más profunda sobre el contenido de la página, lo cual implicaría realizar *web scraping* o solicitar al usuario que proporcione manualmente ciertos datos.
+
+No obstante, esta estrategia **incrementa los costos de autenticación** y la complejidad del sistema, por lo que se debe evaluar cuidadosamente su implementación en un entorno real.
+
 
 #### 6.3 Modelo C — *Nombre del integrante C*
 - (estructura igual a la anterior)
@@ -83,13 +270,7 @@ Para este primer analisis cargamos los datos preprocesados **(Punto 2)**. Ademas
 - Fortalezas y debilidades de cada modelo.
 - Consideraciones de interpretabilidad, tiempo de entrenamiento, etc.
 
-### 8. Modelo Final Seleccionado
-- Criterios de selección (mejor desempeño, consistencia, interpretabilidad...).
-- Algoritmo elegido.
-- Variables utilizadas.
-- Métricas finales obtenidas.
-- Validación cruzada.
-- Lista de reglas para replicar el modelo (puede incluir código pseudolenguaje).
+
 
 ### 9. Conclusiones Generales
 - Resultados más relevantes.
