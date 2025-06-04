@@ -1,13 +1,11 @@
 ---
 title: "Detección de Sitios de Phishing con Machine Learning"
-author: "Tu Nombre o Equipo"
-date: "`r Sys.Date()`"
 output:
   html_document: default
   pdf_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo = "False"}
 #Empezamos limpiando nuestro ambiente
 rm(list = ls(all.names = TRUE))
 
@@ -27,28 +25,78 @@ knitr::opts_chunk$set(
 library(htmltools)
 ```
 
-# Detección de Sitios de Phishing con Machine Learning
-
-**Integrantes**
+#### **Integrantes**
 
 + Alvarado Palacios Fernando
 + Owuen Rodriguez Figueroa Kenzil
 + Ruiz Castillo Carlo
 
-### 1. Introducción
-- ¿Qué es el *phishing*?
-- Breve panorama sobre la ciberseguridad.
-- Objetivo general del proyecto.
-- Objetivos específicos (si cada integrante tuvo un modelo propio).
-- Estructura del documento.
+### 1.- Introducción
 
-### 2. Descripción del Conjunto de Datos
-- Fuente del dataset.
-- Número de observaciones y variables.
-- Variables originales.
-- Tipo de variables (numéricas, categóricas, etc.).
+En los últimos años las dinámicas sociales, económicas y de seguridad han cambiado drásticamente, pues, los medios tecnológicos de los que dispone la sociedad han transformado la manera en la que los seres humanos se relacionan entre sí en sus lazos fraternales, laborales, de autopreservación así como de defensa de sus pertenencias, ya que mucho de la relación humano-mundo se ha trasladado a entornos digitales con nuevas exigencias. Uno de los temas centrales dentro de estas nuevas formas de relacionarse con el mundo es la ciberseguridad al igual que su antecedente, la ciberdelincuencia. Dentro de ésta última, el phishing se ha colocado como un referente, no sólo por su naturaleza, también por su reiterada incidencia en la vida de las personas. Para los investigadores Sandra Sánchez, Eduardo Benavides y Walter Fuertes, éste se define como “el ataque de Ingeniería Social, que busca obtener esta información sensible, pero por medios electrónicos”(Benavides et al., 2020). La dinámica más popular es aquella en que “el usuario recibe un  correo donde le indican acceder a un enlace que es un sitio web falso o también solicita en el mismo correo enviar información confidencial con motivo de actualización de datos”(Wen et al., como se cita en Rosero, 2021). Así, conocer cuál es la naturaleza de estos sitios web se convierte en una preocupación central para evitar este tipo de ataques.
 
-#### Preprocesamiento de los datos
+
+##### Panorama general de la ciberseguridad
+
+De acuerdo con Manuel Coronel Ayala (2023), existe una falta de consciencia con respecto a la ciberseguridad hasta que la falta de ella afecta a una organización o persona. Sin embargo, la pandemia por covid-19 trajo a la mesa la discusión por la exposición al riesgo de ataques cibernéticos, lo que introdujo a las empresas e instituciones públicas a la mesa de discusión, no sólo como un tópico en conferencias sino como un rumbo de acción. Esto ha desembocado en el aprovechamiento de distintas ramas de la computación y estadística. Entre ellas se destacan el uso de Inteligencia Artificial y aprendizaje de máquina (ML por sus siglas en inglés). Coronel (2023) señala que estas se han convertido en herramientas de gran utilidad por su capacidad para manejar grandes conjuntos de datos, aunque ello, hasta el momento no reemplaza las técnicas usuales de identificación de fallas de seguridad (menciona el hacking ético como ejemplo). 
+
+
+
+### 2.- Objetivo general del proyecto
+Con base en lo anteriormente expuesto, se encuentra una necesidad de explorar técnicas de ML para la identificación temprana y oportuna de sitios que incurran en la práctica de phishing. Así, el objetivo del presente proyecto fue utilizar técnicas de análisis estadístico multivariado y ML para la identificación de estos sitios. 
+
+
+##### Objetivos particulares
+Con el fin de cumplir el objetivo, se fijaron los siguientes objetivos:
+Elaborar un modelo de redes neuronales que, con base en la cantidad óptima de variables pueda detectar, dada una determinada información, si un sitio web presenta un intento de phishing o, por el contrario, es inofensivo.
+Elaborar un modelo de regresión capaz de establecer las bases para predecir a partir de un enlace si un sitio web es un intento de phishing.
+Elaborar un modelo de componentes principales que pueda explicar los ejes por los cuales se materializa un ataque de phishing.
+Así, se presenta inicialmente una exposición de los datos, una serie de recursos descriptivos propios del análisis multivariado, posteriormente el uso de técnicas de reducción de la dimensión y finalmente la presentación de los modelos planteados en los objetivos particulares.
+
+
+
+
+
+### 3. Descripción del Conjunto de Datos
+
+##### Fuente del dataset
+
+El dataset se extrajo de PhiUSIIL Phishing URL (Website), y es un archivo csv con más de 235,000 observaciones que registra distintas URL’s así como información referente en materia de phishing así como una etiquetas que registra si alguno de los sitios incurre o no en la práctica. 
+
+##### Número de variables y observaciones
+Hay 56 variables que van desde la URL hasta label que explica si el sitio incurre en la práctica o no. De estas, son 235,796 observaciones, de las cuales 134,850 son legítimas y 100,946 son phishing.
+
+##### Variables originales
+Las variables originales son las siguientes:
+
+FILENAME,	URL,	URLLength,	Domain, DomainLength, IsDomainIP, TLD, URLSimilarityIndex,	CharContinuationRate, TLDLegitimateProb,URLCharProb TLDLength,	NoOfSubDomain,	HasObfuscation, NoOfObfuscatedChar, ObfuscationRatio, NoOfLettersInURL, LetterRatioInURL, NoOfDegitsInURL, DegitRatioInURL, NoOfEqualsInURL, NoOfQMarkInURL, NoOfAmpersandInURL, NoOfOtherSpecialCharsInURL, SpacialCharRatioInURL, IsHTTPS,	  LineOfCode, LargestLineLength, HasTitle, Title, DomainTitleMatchScore, URLTitleMatchScore, HasFavicon,	Robots, IsResponsive, NoOfURLRedirect, NoOfSelfRedirect, HasDescription, NoOfPopup, NoOfiFrame, HasExternalFormSubmit, HasSocialNet, HasSubmitButton,	HasHiddenFields, HasPasswordField, Bank,	Pay, Crypto, HasCopyrightInfo, NoOfImage, NoOfCSS, NoOfJS, NoOfSelfRef,	NoOfEmptyRef, NoOfExternalRef, label.
+
+##### Tipo de variables
+Entre estas se encuentran variables numéricas continuas, categóricas y dicotómicas (0 y 1). 
+
+
+### 4.- Análisis Exploratorio de Datos (EDA)
+
+##### Análisis a priori de los datos.
+Con base en un análisis general de los datos, se puede afirmar que los datos filtrados (29 variables) muestran información clave sobre las características de las URLs. Se observa que la longitud del dominio varía considerablemente, con un promedio de 21.47 caracteres y un máximo de 110, lo que sugiere que algunos sitios maliciosos pueden usar nombres de dominio largos para engañar a los usuarios. La mayoría de los dominios no son direcciones IP, pero hay un pequeño porcentaje que sí lo son, lo que puede indicar intentos de ocultación. En cuanto a los dominios de nivel superior (TLD), "com" es el más frecuente, pero también hay una gran cantidad de otros TLDs menos comunes que podrían ser sospechosos. La tasa de continuación de caracteres tiene una media de 0.85, indicando que muchas URLs tienen patrones de caracteres predecibles, posiblemente diseñados para imitar sitios legítimos. La probabilidad de legitimidad del TLD muestra valores bajos en su mayoría, lo que implica que muchas de estas URLs podrían estar asociadas con phishing. Se puede observar una variedad en la cantidad de subdominios y en la presencia de HTTPS, siendo la mayoría de los sitios seguros con HTTPS, pero todavía hay una proporción significativa sin seguridad. Además, variables como "HasTitle" y "DomainTitleMatchScore" sugieren si el título de la página coincide con el dominio, lo que puede ser un indicador de confiabilidad. En términos de funcionalidad, muchas páginas tienen elementos interactivos como formularios de envío, botones y campos ocultos, lo cual es relevante para determinar si intentan recolectar información de manera fraudulenta. Finalmente, el conjunto de datos también incluye indicadores de posible uso de términos financieros como "Bank" y "Pay", lo que podría apuntar a sitios diseñados para fraudes financieros.
+
+##### Correlaciones entre variables
+
+```{r imagen_centrada, echo = FALSE, message = FALSE, warning = FALSE}
+library(htmltools)
+
+imagen_centrada <- tags$div(
+  style = "text-align: center;",
+  tags$img(src = "Imagenes/correlaciones_phi.png", width = "500px")
+)
+
+browsable(imagen_centrada)
+```
+
+En cuanto a las variables numéricas, que son DomainLength, CharContinuationRate, TLDLegitimateProb, URLCharProb y LetterRatioInURL, las correlaciones indican que URLCharProb y LetterRatioInURL tienen muy poca influencia la una sobre la otra, por lo que esto asegura que la variabilidad sea independiente, mientras que la correlación negativa más fuerte es entre DomainLength y  CharContinuationRate, lo que podría indicar que la longitud del dominio y la tasa de continuación de caracteres son propios de sitios que incurren en phishing, esto es, ahí donde haya una mayor longitud y menor tasa de continuación de caracteres es posible encontrar phishing. Además, la mayor correlación se encuentra entre la longitud del dominio y proporción de letras en la URL, lo que podría traducirse como una influencia de la proporción de caracteres inusuales con la longitud de la URL. Fuera de ello, las correlaciones no son fuertes o significativas, lo que podría hablar de la variabilidad del dataset.
+
+
+#### 5.- Preprocesamiento de los datos
 
 
 ```{r}
@@ -59,7 +107,7 @@ bloque_html <- div(
   
   # Columna izquierda con el texto
   div(
-    style = "width: 60%;",
+    style = "width: 55%;",
     p(
       HTML(
         "Primero se realizó una selección preliminar de variables, basada en la varianza. 
@@ -73,8 +121,8 @@ bloque_html <- div(
   
   # Columna derecha con la imagen
   div(
-    style = "width: 35%; text-align: right;",
-    tags$img(src = "Imagenes/NoOfAmpersandInUrl.jpg", width = "300px")
+    style = "width: 45%; text-align: right;",
+    tags$img(src = "Imagenes/NoOfAmpersandInUrl.jpg", width = "100%")
   )
 )
 
@@ -95,7 +143,7 @@ div_tld <- div(
   
   # Columna izquierda: texto explicativo
   div(
-    style = "width: 60%;",
+    style = "width: 55%;",
     HTML(paste0(
       "<p><strong>TLD</strong> (Top-Level Domain) contenía aproximadamente 650 niveles distintos. 
       Para reducir la complejidad del modelo, se analizó la proporción de aparición de cada TLD en 
@@ -111,8 +159,8 @@ div_tld <- div(
   
   # Columna derecha: imagen
   div(
-    style = "width: 35%; text-align: right;",
-    tags$img(src = "Imagenes/TLD.jpg", width = "300px")
+    style = "width: 45%; text-align: right;",
+    tags$img(src = "Imagenes/TLD.jpg", width = "100%")
   )
 )
 
@@ -133,15 +181,11 @@ Estas transformaciones permiten disminuir la dimensionalidad categórica sin per
 
 
 
-### 3. Análisis Exploratorio de Datos (EDA)
-- Estadísticas descriptivas generales.
-- Visualización de distribuciones.
-- Correlaciones entre variables.
-- Identificación de valores atípicos.
 
-### 4. Reducción de Dimensionalidad
 
-#### 4.1 Análisis PCA Exploratorio
+### 6. Reducción de Dimensionalidad
+
+#### 6.1) Análisis PCA Exploratorio
 
 Para este primer análisis, cargamos los datos preprocesados (**Punto 2**). Además, eliminamos variables como **Titulo**, **url** y **domain**, ya que estas ya están representadas en otras *features*. Con el preprocesamiento listo, estandarizamos los datos para que el análisis **PCA** pueda aplicarse correctamente.
 
@@ -174,7 +218,7 @@ browsable(div_pca)
 
 
 
-#### Interpretación de Componentes Principales
+##### Interpretación de Componentes Principales
 
 El **Componente 1** se asocia con características relacionadas con la legitimidad de la página. Este componente agrupa variables que reflejan qué tan similar es la URL a sitios legítimos, así como la presencia de indicadores de autenticidad, como `HasCopyrightInfo`, `HasSocialNet` y `URLSimilarity`. En este eje, una mayor cantidad de caracteres especiales en la URL suele estar negativamente relacionada con la legitimidad.
 
@@ -187,23 +231,149 @@ En resumen, podríamos interpretar que:
 
 
 
-#### 4.2 Análisis Factorial (FA)
-- Comparación con PCA (si aplica).
-- Factores obtenidos.
-- Interpretación.
+#### 6.2 Análisis Factorial (FA)
 
 
-### 6. Modelado Individual
+Con base en la data filtrada en los pasos anteriores con 29 variables y 235,795 observaciones se realizó el análisis de factores. Para ello, se filtraron las variables numéricas, las cuales resultaron ser: DomainLength, CharContinuationRate, TLDLegitimateProb, URLCharProb y LetterRatioInURL.  Que son la longitud del dominio, tasa de continuación de caracteres, probabilidad de legitimidad del TLD (evalúa la probabilidad de que una TLD pertenezca a un sitio legítimo o a uno sospechoso), probabilidad de caracteres en la URL (indica la probabilidad de que los caracteres en la URL sean de sitios legítimos o sospechosos) y proporción de letras en la URL. 
 
-#### 6.1 Modelo A — *Nombre del integrante A*
-- Algoritmo elegido (e.g., regresión logística, árbol de decisión, etc.).
-- Justificación.
-- Variables utilizadas.
-- Proceso de entrenamiento y validación.
-- Métricas de desempeño.
-- Observaciones importantes.
+El análisis paralelo reflejó que sería mejor trabajar con tan solo dos factores. Lo que pareció ser razonable para las variables sometidas al análisis de factores. 
 
-#### 6.2 Modelo B — *Fernando Alvarado Palacios*
+Después de hacer el análisis por el método de Principal Axis Factoring se sugiere que existen dos factores principales en los datos. La variable DomainLength está fuertemente relacionada con el primer factor, mientras que TLDLegitimateProb y URLCharProb tienen una mayor asociación con el segundo. Las comunalidades indican que DomainLength es la mejor explicada por los factores, mientras que TLDLegitimateProb tiene una variabilidad que no es capturada adecuadamente. En términos de varianza, el primer factor explica el 34% de la variabilidad total y el segundo, el 15%, con un acumulado del 49%. La prueba de suficiencia sugiere que dos factores son adecuados, ya que el objetivo de la función es muy bajo en comparación con el modelo nulo. Además, el RMSR de 0.01 indica que el ajuste del modelo es excelente, con residuos mínimos. Los puntajes factoriales muestran una alta correlación con los factores, especialmente el primero, lo que implica una adecuada representación de las dimensiones latentes. 
+
+
+```{r bloque_interpretacion, echo = FALSE, message = FALSE, warning = FALSE}
+library(htmltools)
+
+div_interpretacion <- div(
+  style = "display: flex; align-items: center; justify-content: space-between;",
+  
+  # Columna izquierda: texto interpretativo
+  div(
+    style = "width: 55%;",
+    HTML(paste0(
+      "<p>
+        <strong>Interpretación</strong><br>
+        Puede considerarse que el primer factor está fuertemente asociado con la longitud del dominio y la tasa de continuación de caracteres, lo que sugiere que los sitios maliciosos tienden a tener nombres de dominio largos y patrones de caracteres inusuales en la URL.
+        El segundo factor está más relacionado con la probabilidad de legitimidad del TLD y la probabilidad de caracteres en la URL, lo que indica que los sitios de phishing pueden utilizar dominios menos confiables y estructuras de caracteres que difieren de las de los sitios legítimos.
+      </p>"
+    ))
+  ),
+  
+  # Columna derecha: imagen Rick
+  div(
+    style = "width: 45%; text-align: right;",
+    tags$img(src = "Imagenes/fa_pesos.png", style = "width: 100%;")
+  )
+)
+
+browsable(div_interpretacion)
+```
+
+
+
+
+
+
+### 7. Modelado Individual
+
+#### Modelo A - *Kenzil Rodriguez Figueroa*
+
+##### Justificación
+
+En ocasiones es necesario encontrar patrones poco intuitivos, cuya complejidad puede rebasar modelos usuales. Así, utilizando técnicas de aprendizaje profundo, las redes neuronales pueden analizar grandes volúmenes de datos y aprender a diferenciar entre sitios legítimos y fraudulentos con alta precisión. Lo cual es ideal para el análisis de esta base, que cuenta con 235,795 observaciones y puede resultar en complejos patrones.
+
+##### Variables seleccionadas
+
+Para este caso se utilizaron las variables DomainLength, CharContinuationRate, TLDLegitimateProb, URLCharProb, LetterRatioInURL y label. Cuya explicación ya se encuentra en el apartado 4. Son variables continuas que explican de forma cuantitativa la estructura de una URL. El añadido de la variable label se agregó pues resulta indispensable para el entrenamiento de la red neuronal en cuestión.
+
+##### Arquitectura
+
+La red se programó en el software python en su versión 3.10. Las paqueterías utilizadas fueron pandas, train_test_split, StandardScaler, Sequential, Dense y Adam. La utilidad de Pandas es el manejo de datos en tablas; train_test_split se usa para dividir los datos en un conjunto de entrenamiento y en otro de prueba; Sequential tal cual es para poder hacer una red neuronal multicapa; mientras que Dense es para poder hacer capas densamente conectadas; finalmente, Adam es un optimizador avanzado basado en gradiente descendente que mejora la velocidad y precisión del entrenamiento del modelo.
+
+La arquitectura corresponde a una red neuronal multicapa (o perceptrón multicapa), diseñada para realizar una tarea de clasificación binaria: determinar si un enlace es phishing o no. Esta red sigue una estructura secuencial, en la cual cada capa está conectada directamente con la siguiente.
+
+El modelo consta de tres capas densamente conectadas. La cuales se construyeron como sigue:
+
+- La capa de entrada toma como entrada cinco variables predictoras, que son las ya mencionadas. Se compone de 16 neuronas, cada una con una función de activación ReLU (Rectified Linear Unit). Esta función introduce no linealidad. Cada neurona de esta capa calcula una combinación lineal de las entradas, le aplica la función ReLU y propaga el resultado hacia adelante.
+
+
+- La segunda capa recibe como entrada los 16 valores de activación provenientes de la primera capa. Esta segunda capa tiene 8 neuronas, también con activación ReLU. Al tener una estructura más pequeña que la anterior, contribuye a una ligera compresión de la representación intermedia, lo cual puede ayudar a evitar el sobreajuste.
+
+
+- La última capa tiene una única neurona con función de activación sigmoide. Esta neurona produce un valor entre 0 y 1 que representa la probabilidad estimada de que un enlace sea phishing. Si el valor supera 0.5, se interpreta como una predicción positiva (phishing), de lo contrario como negativa (no hay sospecha de phishing).
+
+##### Entrenamiento y validación
+
+El conjunto de datos se dividió en un 80% para entrenamiento y 20% para la prueba. El proceso de entrenamiento se dividió en 20 iteraciones, que Python llama “épocas” (epochs propiamente hablando) en los que el modelo se entrena y prueba, mejorando iteración a iteración la efectividad del mismo. Posteriormente se evalúa el modelo.
+
+##### Métricas de desempeño
+
+```{r bloque_confusion, echo = FALSE, message = FALSE, warning = FALSE}
+library(htmltools)
+
+div_confusion <- div(
+  style = "display: flex; align-items: center; justify-content: space-between;",
+  
+  # Columna izquierda: descripción del desempeño del modelo
+  div(
+    style = "width: 60%;",
+    HTML(paste0(
+      "<p>
+        De acuerdo con la evaluación del modelo, su <strong>accuracy</strong> es del 98%. 
+        Además, se tiene la siguiente matriz de confusión:<br><br>
+        La matriz indica que hay 20,000 casos en los que el modelo predijo correctamente que el enlace era legítimo, 
+        512 casos en los que el modelo clasificó como phishing un enlace que en realidad era legítimo, 
+        413 casos en los que el modelo clasificó como legítimo un enlace que en realidad era phishing, 
+        y 26,622 casos en los que el modelo identificó correctamente un enlace como phishing.
+      </p>"
+    ))
+  ),
+  
+  # Columna derecha: imagen
+  div(
+    style = "width: 35%; text-align: right;",
+    tags$img(src = "Imagenes/matriz_de_confusion.png", width = "300px")
+  )
+)
+
+browsable(div_confusion)
+```
+
+
+Se tuvo una precisión para phishing de 0.9811307 (98.11%), una sensibilidad (también llamada recall) de 0.9847235 (98.47%) y una tasa de falsos positivos del 2.49%. 
+
+Finalmente, la curva ROC (Receiver Operating Characteristic) indica lo siguiente: 
+
+```{r bloque_roc, echo = FALSE, message = FALSE, warning = FALSE}
+library(htmltools)
+
+div_roc <- div(
+  style = "display: flex; align-items: center; justify-content: space-between;",
+  
+  # Columna izquierda: explicación ROC y AUC
+  div(
+    style = "width: 60%;",
+    HTML(paste0(
+      "<p>
+        Es decir, la gráfica ROC y su correspondiente AUC (prácticamente 1) indican que el modelo tiene una capacidad de discriminación muy buena, 
+        siendo altamente efectivo a la hora de identificar enlaces phishing, minimizando tanto falsos positivos como falsos negativos.
+      </p>"
+    ))
+  ),
+  
+  # Columna derecha: imagen
+  div(
+    style = "width: 35%; text-align: right;",
+    tags$img(src = "Imagenes/curva_roc.png", width = "300px")
+  )
+)
+
+browsable(div_roc)
+```
+
+
+
+#### 7.2 Modelo B - *Fernando Alvarado Palacios*
 
 ##### Objetivo
 
@@ -226,24 +396,41 @@ Inicialmente, se filtraron las variables directamente asociadas al enlace, y se 
 La baja proporción de verdaderos negativos (NPV) nos llevó a considerar la inclusión de **interacciones entre variables** para mejorar el rendimiento del modelo.
 
 
+```{r bloque_interacciones, echo = FALSE, message = FALSE, warning = FALSE}
+library(htmltools)
 
-<div style="display: flex; align-items: center; justify-content: space-between;">
-  <div style="width: 60%;">
-    <p>
-En el caso del modelo con <strong>interacciones entre variables</strong>, se realizó un filtrado previo debido a que el conjunto de datos generaba aproximadamente 70 nuevas variables adicionales, además de las variables de efectos principales. Este incremento elevaba significativamente la complejidad del modelo.
+div_interacciones <- div(
+  style = "display: flex; align-items: center; justify-content: space-between;",
+  
+  # Columna izquierda: explicación del proceso
+  div(
+    style = "width: 60%;",
+    HTML(paste0(
+      "<p>
+      En el caso del modelo con <strong>interacciones entre variables</strong>, se realizó un filtrado previo debido a que el conjunto de datos generaba aproximadamente 70 nuevas variables adicionales, además de las variables de efectos principales. Este incremento elevaba significativamente la complejidad del modelo.
+      </p>
+      <p>El proceso de selección consistió en dos etapas:</p>
+      <ol>
+        <li><strong>Eliminación de variables con varianza cero</strong>, ya que estas no aportan información útil al modelo.</li>
+        <li><strong>Aplicación del algoritmo Stepwise Backward</strong>, que se basa en la métrica <strong>AIC</strong> (<em>Akaike Information Criterion</em>).</li>
+      </ol>
+      <p>
+      Este método comienza con un modelo que incluye todas las variables (efectos principales + interacciones) y, de manera iterativa, elimina una variable a la vez. En cada paso evalúa si la eliminación reduce el AIC. El modelo final seleccionado es aquel que presenta el <strong>menor valor de AIC</strong>, ya que esto indica un mejor equilibrio entre bondad de ajuste y complejidad del modelo.
+      </p>"
+    ))
+  ),
+  
+  # Columna derecha: imagen explicativa
+  div(
+    style = "width: 40%; text-align: right;",
+    tags$img(src = "Imagenes/FiltroML.jpg", style = "width: 100%;")
+  )
+)
 
-El proceso de selección consistió en dos etapas:
+browsable(div_interacciones)
+```
 
-1. <strong>Eliminación de variables con varianza cero</strong>, ya que estas no aportan información útil al modelo.  
-2. <strong>Aplicación del algoritmo Stepwise Backward</strong>, que se basa en la métrica <strong>AIC</strong> (<em>Akaike Information Criterion</em>).
 
-Este método comienza con un modelo que incluye todas las variables (efectos principales + interacciones) y, de manera iterativa, elimina una variable a la vez. En cada paso evalúa si la eliminación reduce el AIC. El modelo final seleccionado es aquel que presenta el <strong>menor valor de AIC</strong>, ya que esto indica un mejor equilibrio entre bondad de ajuste y complejidad del modelo.
-    </p>
-  </div>
-  <div style="width: 40%; text-align: right;">
-    <img src="Imagenes/FiltroML.jpg" width="100%" />
-  </div>
-</div>
 
 Después del filtrado y la selección de variables mediante el algoritmo *Stepwise Backward*, el modelo final obtuvo los siguientes puntajes:
 
@@ -262,23 +449,87 @@ El modelo puede funcionar como una **primera barrera de protección**, pero no e
 No obstante, esta estrategia **incrementa los costos de autenticación** y la complejidad del sistema, por lo que se debe evaluar cuidadosamente su implementación en un entorno real.
 
 
-#### 6.3 Modelo C — *Nombre del integrante C*
-- (estructura igual a la anterior)
+#### 7.3 Modelo C — *Ruiz Castillo Carlo*
 
-### 7. Comparación de Modelos
-- Tabla comparativa con métricas (Accuracy, Precision, Recall, F1, AUC).
-- Fortalezas y debilidades de cada modelo.
-- Consideraciones de interpretabilidad, tiempo de entrenamiento, etc.
+##### Proceso de Entrenamiento
+
+Para este modelo se utilizó `X_PCA`, el cual contiene los dos componentes principales obtenidos del análisis de **PCA**. Este es un caso de clasificación con **clases desbalanceadas**, lo cual requiere especial cuidado en la elección de métricas de evaluación.
+
+Además, el **error tipo II** (clasificar una URL de *phishing* como benigna) puede tener consecuencias graves para el usuario. Por ello, métricas como **accuracy** no son las más apropiadas. En su lugar, se utilizaron:
+
+- **F1 Score**, que balancea precisión (*precision*) y sensibilidad (*recall*).
+- **Área bajo la curva ROC (AUC-ROC)**, para evaluar la discriminación global del modelo.
+
+#### Métricas
+
+El modelo de regresión logística entrenado sobre los componentes de PCA arrojó los siguientes resultados:
+
+- **Precisión (Precision):** 0.983  
+- **Sensibilidad (Recall):** 0.980  
+- **F1 Score:** 0.982  
+
+Estas métricas reflejan que el modelo tiene una eficacia superior al **95%** en todos los indicadores clave, lo cual es poco común en conjuntos de datos del mundo real.
+
+#### Conclusiones
+
+En conclusión, el modelo basado en PCA resulta altamente eficaz para clasificar URLs y detectar intentos de *phishing*.
+
+Los dos componentes principales lograron capturar la esencia del comportamiento malicioso, permitiendo una **interpretación clara en términos de ciberseguridad**.
+
+Este modelo tiene potencial para ser implementado en un **software práctico**, como una extensión para el navegador Chrome. Dado su buen desempeño, podría representar una solución con **viabilidad comercial** en el ámbito de la seguridad informática.
 
 
 
-### 9. Conclusiones Generales
-- Resultados más relevantes.
-- Aportes individuales al proyecto.
-- Limitaciones del estudio.
-- Posibles mejoras o líneas futuras de investigación.
+
+
+
+### 9. Comparación de Modelos y Conclusiones
+
+##### Comparativa por métricas
+
+Las métricas que usó el modelo A fueron accuracy, presición, sensibilidad y AUC, las que usó el modelo B fueron accuracy, el valor predictivo positivo y negativo, mientras que las que usó el modelo C fueron precisión, sensibilidad y F1 score. Podemos ver que el modelo A y B tuvieron un accuracy del 82.09% y 97.848% respectivamente, A y C tuvieron una precisión de 98.11% y 98.30%, además, una sensibilidad del 98.47% y 98% respectivamente. Por su parte, todos los modelos tienen un AUC cercano a 1, por lo que los modelos son bastante sólidos.
+
+##### Fortalezas y debilidades de cada modelo
+
+- Modelo A. La fortaleza del modelo A es su capacidad para analizar patrones complejos y no lineales dentro del dataset, por lo que su potencialidad se encuentra en su análisis profundo de los datos numéricos de la base. Tiene muy buenas métricas, por lo que tiene un margen pequeño de error. Sus debilidades principales serían que, en primer lugar, está sujeto al uso de las variables seleccionadas y dependencia extrema de la variable label para su proceso de entrenamiento. 
+  
+- Modelo B. La fortaleza principal del modelo B es su solidez en construcción así como su accesibilidad interpretativa, por lo que tiene la potencia de modelar la complejidad del dataset de modo que lo vuelve digerible. Además, tiene la ventaja de explicar de manera considerable la variabilidad de los datos. Su debilidad es la tasa de verdaderos negativos, la cual es considerable, pero dado el impacto del phishing esto pudiera ser perjudicial para los usuarios.
+
+
+- Modelo C. Su principal fortaleza es la capacidad de explicar globalmente el dataset por medio de su variabilidad. Además tiene una gran utilidad detectando intentos de phishing y tiene excelentes métricas. Su mayor debilidad tal vez sea la generalidad, aunque esto podría mitigarse complementando el modelo.
+
+##### Consideraciones de interpretabilidad
+
+Todos los modelos tienen gran potencialidad interpretativa, sin embargo, cada modelo tiene sus particularidades. El modelo A tiene una gran capacidad predictora, el C explica de buena manera el dataset y el modelo B quizás sea el que tiene una mayor capacidad para interpretar nuevos datos, dada su estructura y naturaleza.
+
+Finalmente, se puede llegar a las siguientes conclusiones:
+
+- Los datos son robustos, con información útil para analizar y predecir sitios web con sospecha de phishing. No obstante, muchas de las variables fueron inútiles para cualquier análisis multivariado, de ahí que inicialmente se redujeron de 56 a 29 variables, donde sólo 5 eran numéricas útiles para el análisis de factores y 4 para el análisis de componentes principales.
+
+- El análisis de correlaciones demostró que la clave para detectar phishing se encuentra en analizar la estructura de las URL, su longitud, proporción de letras frente a otros caracteres y la repetición de caracteres.
+
+- Las técnicas de reducción de dimensión dejaron entre 4 y 5 variables de interés, que son numéricas. 
+
+- El modelo A resultó de gran utilidad para predecir casos de phishing dados datos numéricos concretos sobre las URL.
+
+- El modelo B resultó de gran utilidad para predecir e interpretar con facilidad cambios en los datos dada su potencialidad para analizar la estructura de las URL.
+
+- El modelo C resultó de mucha utilidad para explicar la variabilidad de los datos en tanto técnica de reducción de dimensión y modelo base para otros complementarios.
+
+- Salvo una métrica, en general los tres modelos son capaces de explicar y predecir las características del dataset.
+
+Una interpretación final para la detección de sitios que incurren en esta práctica es que el mayor indicio de phishing se encuentra en la rareza de la estructura de la URL del sitio, a mayor longitud, menos caracteres alfanuméricos y extraños patrones de continuación de caracteres es uno de los indicios más fuertes. En cuanto a los modelos, estos pudieran utilizarse de forma complementaria, esto es, el modelo de componentes principales puede dar indicios fuertes sobre los patrones que sigue el phishing; el modelo de regresión puede ser útil para analizar los distintos cambios en los datos y para interpretar estas fluctuaciones; así, con la información anterior el modelo de redes puede ser útil para predecir si una URL concreta es un intento de phishing, lo cual puede prevenir de manera oportuna una violación a la seguridad de los usuarios, tanto particulares como institucionales.
+
 
 
 ### 11. Bibliografía
-- Formato APA o IEEE según se les haya solicitado.
+
+
+- Machine Learning con R y tidymodels por Joaquín Amat Rodrigo, disponible con licencia CC BY-NC-SA 4.0 en https://www.cienciadedatos.net/documentos/59_machine_learning_con_r_y_tidymodels.html
+
+- Rosero Tejada, L. F. (2021). El Phishing como riesgo informático, técnicas y prevención en los canales electrónicos: Un mapeo sistemático (Bachelor's thesis).
+
+- Benavides, E., Fuertes, W., Sanchez, S., & Nuñez-Agurto, D. (2020). Caracterización de los ataques de phishing y técnicas para mitigarlos. Ataques: una revisión sistemática de la literatura. Ciencia y Tecnología, 13(1), 97-104.
+
+- Ayala, F. M. C., & Sevilla, G. M. L. (2023). Mapeo del panorama actual de la ciberseguridad en la era moderna digital. RECIMUNDO, 7(2), 441-452.
 

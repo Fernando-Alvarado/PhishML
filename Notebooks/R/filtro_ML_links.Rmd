@@ -55,7 +55,10 @@ interacciones_df <- cbind(interacciones_df, label = datosRaw$label)  # Agregando
 colnames(interacciones_df) <- gsub(":", "_x_", colnames(interacciones_df))
 
 
-interacciones_df
+interacciones_df <-  interacciones_df %>%
+  mutate(
+    label = as.factor(label)
+  )
 ```
 
 
@@ -69,6 +72,17 @@ length(interacciones_df)
 esquisse::esquisser(interacciones_df)
 ```
 
+```{r}
+ggplot(interacciones_df) +
+  aes(x = `TLDnet _x_NoOfSubDomain1`, fill = label) +
+  geom_histogram(bins = 30L) +
+  scale_fill_manual(
+    values = c(`0` = "#BE2D23",
+    `1` = "#084F93")
+  ) +
+  theme_minimal()
+
+```
 
 
 
